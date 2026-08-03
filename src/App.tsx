@@ -22,16 +22,16 @@ function App() {
               </PublicOnlyRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/register"
             element={
               <PublicOnlyRoute>
                 <Register />
               </PublicOnlyRoute>
             }
-          />
+          /> */}
 
-          <Route
+          {/* <Route
             element={
               <ProtectedRoute>
                 <AppLayout />
@@ -44,10 +44,10 @@ function App() {
             <Route path="/team" element={<Team />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/board/:boardId" element={<BoardPage />} />
-          </Route>
+          </Route> */}
 
-          <Route path="/404" element={<NotFound />} />
-          <Route path="*" element={<Navigate to="/404" replace />} />
+          {/* <Route path="/404" element={<NotFound />} /> */}
+          {/* <Route path="*" element={<Navigate to="/404" replace />} /> */}
         </Routes>
 
         <Toaster
