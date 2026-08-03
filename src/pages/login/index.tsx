@@ -78,7 +78,7 @@ const LoginPage = () => {
             <div className="brand-gradient flex h-10 w-10 items-center justify-center rounded-2xl shadow-(--shadow-card)">
               <Icon
                 name="bolt"
-                filled
+                filled={true}
                 size={20}
                 className="text-white"
               />

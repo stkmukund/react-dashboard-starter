@@ -86,7 +86,8 @@ const AuthAside: React.FC<AuthAsideProps> = ({
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 ring-1 ring-inset ring-white/20">
                     <Icon
                         name="bolt"
-                        className="text-white text-[18px]"
+                        className="text-white"
+                        size={18}
                         filled
                     />
                 </span>
@@ -104,7 +105,8 @@ const AuthAside: React.FC<AuthAsideProps> = ({
                 <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-semibold backdrop-blur">
                     <Icon
                         name="auto_awesome"
-                        className="text-[14px]"
+                        className=""
+                        size={14}
                     />
                     AI is prioritizing your backlog
                 </div>

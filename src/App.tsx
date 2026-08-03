@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import RootPage from './pages'
 import LoginPage from './pages/login'
+import RegisterPage from './pages/register'
 import { PublicOnlyRoute } from './routes'
 
 function App() {
@@ -22,14 +23,14 @@ function App() {
               </PublicOnlyRoute>
             }
           />
-          {/* <Route
+          <Route
             path="/register"
             element={
               <PublicOnlyRoute>
-                <Register />
+                <RegisterPage />
               </PublicOnlyRoute>
             }
-          /> */}
+          />
 
           {/* <Route
             element={
