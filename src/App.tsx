@@ -1,11 +1,14 @@
 
 import { Toaster } from 'react-hot-toast'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import AppLayout from './components/layout/AppLayout'
 import { AuthProvider } from './context/AuthContext'
 import RootPage from './pages'
+import DashboardPage from './pages/dashboard'
 import LoginPage from './pages/login'
+import NotFound from './pages/notFound'
 import RegisterPage from './pages/register'
-import { PublicOnlyRoute } from './routes'
+import { ProtectedRoute, PublicOnlyRoute } from './routes'
 
 function App() {
 
@@ -32,23 +35,23 @@ function App() {
             }
           />
 
-          {/* <Route
+          <Route
             element={
               <ProtectedRoute>
                 <AppLayout />
               </ProtectedRoute>
             }
           >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/my-tasks" element={<MyTasks />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            {/* <Route path="/my-tasks" element={<MyTasks />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/team" element={<Team />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/board/:boardId" element={<BoardPage />} />
-          </Route> */}
+            <Route path="/board/:boardId" element={<BoardPage />} /> */}
+          </Route>
 
-          {/* <Route path="/404" element={<NotFound />} /> */}
-          {/* <Route path="*" element={<Navigate to="/404" replace />} /> */}
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
 
         <Toaster
