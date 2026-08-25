@@ -9,16 +9,9 @@ export default function SidebarFooter({
 }: Props) {
 
     return (
-
-        <div className="
-mt-auto
-border-t
-px-3
-py-3">
-
+        <>
             {children}
-
-        </div>
+        </>
 
     )
 

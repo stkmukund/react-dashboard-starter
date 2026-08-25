@@ -11,6 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 import { cn } from "../../lib/utils";
 import { Sidebar, type SidebarSection } from "../sidebar";
 import Icon from "../ui/Icon";
+import Avatar from "../ui/Avatar";
 
 interface LayoutContextType {
     openCreateBoard: () => void;
@@ -33,7 +34,7 @@ export const useLayout = (): LayoutContextType => {
 
 const LayoutInner = (): JSX.Element => {
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const [createOpen, setCreateOpen] = useState(false);
     const [commandOpen, setCommandOpen] = useState(false);
 
@@ -117,6 +118,22 @@ const LayoutInner = (): JSX.Element => {
         },
     ];
 
+    // Sidebar footer
+    const footerUserData = () => (
+        <>
+            < div className="mx-3 mt-3 border-t" />
+            <div className={cn("flex h-16 items-center", collapsed ? "justify-center px-2" : "gap-3 px-3.5")}>
+                <Avatar name={user?.name} id={user?.id} src={user?.avatar_url} size="sm" className="shrink-0" />
+                {!collapsed && (
+                    <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-ink">{user?.name}</p>
+                        <p className="truncate text-xs text-faint">{user?.email}</p>
+                    </div>
+                )}
+            </div>
+        </>
+    )
+
     return (
         <LayoutContext.Provider value={{ openCreateBoard, openCommand }}>
             <div className="h-screen overflow-hidden">
@@ -134,7 +151,7 @@ const LayoutInner = (): JSX.Element => {
                             <p className="text-xs opacity-80">Turn a goal into backlog</p>
                         </button>
                     }
-                    footer={<div>User Profile Here</div>}
+                    footer={footerUserData()}
                 />
                 <main className={cn("flex h-screen min-w-0 flex-col overflow-hidden transition-[padding] duration-300", collapsed ? "md:pl-23" : "md:pl-70")}>
                     <Outlet />
