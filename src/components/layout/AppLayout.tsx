@@ -145,12 +145,12 @@ const LayoutInner = (): JSX.Element => {
                         logo: <Icon name="bolt" filled={true} size={20} className="h-5 w-5 fill-white text-white" />
                     }}
                     sections={sidebarSections}
-                    bottomContent={
-                        <button onClick={openCreateBoard} className="brand-gradient rounded-2xl p-4 text-left text-white">
-                            <p className="font-semibold">Plan with AI</p>
-                            <p className="text-xs opacity-80">Turn a goal into backlog</p>
-                        </button>
-                    }
+                    // bottomContent={
+                    //     <button onClick={openCreateBoard} className="brand-gradient rounded-2xl p-4 text-left text-white">
+                    //         <p className="font-semibold">Plan with AI</p>
+                    //         <p className="text-xs opacity-80">Turn a goal into backlog</p>
+                    //     </button>
+                    // }
                     footer={footerUserData()}
                 />
                 <main className={cn("flex h-screen min-w-0 flex-col overflow-hidden transition-[padding] duration-300", collapsed ? "md:pl-23" : "md:pl-70")}>
