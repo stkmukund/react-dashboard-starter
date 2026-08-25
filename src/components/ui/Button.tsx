@@ -2,6 +2,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "../../lib/utils";
 import Icon from "./Icon";
+import Spinner from "./Spinner";
 
 const variants = {
   primary:
@@ -55,7 +56,8 @@ const Button: React.FC<ButtonProps> = ({
     disabled={disabled || loading}
     {...props}
   >
-    {loading && <Icon name="Autorenew" className="h-4 w-4 animate-spin" />}
+    {/* {loading && <Icon name="Autorenew" className="h-4 w-4 animate-spin" />} */}
+    {loading && <Spinner size="sm" />}
     {children}
   </button>
 );

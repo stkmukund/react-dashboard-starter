@@ -1,7 +1,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AuthAside from "../../components/auth/AuthAside";
 import Button from "../../components/ui/Button";
 import Icon from "../../components/ui/Icon";
@@ -15,8 +15,6 @@ interface LoginForm {
 
 const LoginPage = () => {
   const { login } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const [form, setForm] = useState<LoginForm>({
     email: "",
@@ -47,16 +45,7 @@ const LoginPage = () => {
 
     try {
       await login(form);
-
       toast.success("Welcome back!");
-
-      navigate(
-        (location.state as { from?: { pathname: string } })?.from?.pathname ??
-        "/dashboard",
-        {
-          replace: true,
-        }
-      );
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong.";

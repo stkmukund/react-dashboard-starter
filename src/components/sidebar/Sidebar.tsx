@@ -18,26 +18,14 @@ export default function Sidebar({
     return (
 
         <aside
-            className={cn(
-                "fixed inset-y-3 left-3 z-40 hidden flex-col overflow-hidden rounded-3xl border bg-surface shadow-xl md:flex",
-
-                collapsed
-                    ? "w-18"
-                    : "w-63"
-            )}
+            className={cn("fixed inset-y-3 left-3 z-40 hidden flex-col overflow-hidden rounded-3xl border bg-surface shadow-xl md:flex", collapsed ? "w-18" : "w-63")}
         >
-
             <SidebarHeader
                 collapsed={collapsed}
                 onToggle={onToggle}
                 config={header}
             />
-
-            <div className="
-flex-1
-overflow-y-auto
-no-scrollbar">
-
+            <div className="flex-1 overflow-y-auto no-scrollbar">
                 {
                     sections.map((section, index) => (
                         <SidebarSection

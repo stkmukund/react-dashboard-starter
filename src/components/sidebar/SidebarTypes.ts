@@ -10,6 +10,16 @@ export interface SidebarItem {
   to?: string;
 
   /**
+   * Match exact route (for NavLink)
+   */
+  end?: boolean;
+
+  /**
+   * Custom active state or active route matching logic
+   */
+  isActive?: boolean | ((pathname: string) => boolean);
+
+  /**
    * Button action
    */
   onClick?: () => void;

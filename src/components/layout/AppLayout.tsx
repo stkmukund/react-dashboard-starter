@@ -8,9 +8,9 @@ import {
 } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { cn } from "../../lib/utils";
 import { Sidebar, type SidebarSection } from "../sidebar";
 import Icon from "../ui/Icon";
-import { cn } from "../../lib/utils";
 
 interface LayoutContextType {
     openCreateBoard: () => void;
@@ -32,82 +32,39 @@ export const useLayout = (): LayoutContextType => {
 };
 
 const LayoutInner = (): JSX.Element => {
-
     const navigate = useNavigate();
-
     const { logout } = useAuth();
+    const [createOpen, setCreateOpen] = useState(false);
+    const [commandOpen, setCommandOpen] = useState(false);
 
-    const [createOpen, setCreateOpen] =
-        useState(false);
+    const [collapsed, setCollapsed] = useState(() => localStorage.getItem("sidebar-collapsed") === "true");
 
-    const [commandOpen, setCommandOpen] =
-        useState(false);
-
-    const [collapsed, setCollapsed] =
-        useState(
-            () =>
-                localStorage.getItem(
-                    "sidebar-collapsed"
-                ) === "true"
-        );
-
-    const openCreateBoard = useCallback(() => {
-        setCreateOpen(true);
-    }, []);
+    const openCreateBoard = useCallback(() => { setCreateOpen(true) }, []);
 
     const openCommand = useCallback(() => {
         setCommandOpen(true);
     }, []);
 
     const toggleSidebar = useCallback(() => {
-
         setCollapsed((prev) => {
-
             const next = !prev;
-
-            localStorage.setItem(
-                "sidebar-collapsed",
-                String(next)
-            );
-
+            localStorage.setItem("sidebar-collapsed", String(next));
             return next;
-
         });
-
     }, []);
 
     useEffect(() => {
-
         const onKey = (e: KeyboardEvent) => {
-
-            if (
-                (e.metaKey || e.ctrlKey)
-                &&
-                e.key.toLowerCase() === "k"
-            ) {
-
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
                 e.preventDefault();
-
-                setCommandOpen(
-                    value => !value
-                );
-
+                setCommandOpen(value => !value);
             }
-
         };
 
-        document.addEventListener(
-            "keydown",
-            onKey
-        );
+        document.addEventListener("keydown", onKey);
 
         return () => {
-
-            document.removeEventListener(
-                "keydown",
-                onKey
-            );
-
+            document.removeEventListener("keydown", onKey);
         };
 
     }, []);
@@ -115,26 +72,22 @@ const LayoutInner = (): JSX.Element => {
     const sidebarSections: SidebarSection[] = [
         {
             title: "Menu",
-
             items: [
                 {
                     label: "Dashboard",
                     icon: "dashboard",
                     to: "/dashboard",
                 },
-
                 {
                     label: "My Tasks",
                     icon: "task_alt",
                     to: "/my-tasks",
                 },
-
                 {
                     label: "Calendar",
                     icon: "calendar_month",
                     to: "/calendar",
                 },
-
                 {
                     label: "Team",
                     icon: "groups",
@@ -142,23 +95,19 @@ const LayoutInner = (): JSX.Element => {
                 },
             ],
         },
-
         {
             title: "General",
-
             items: [
                 {
                     label: "Settings",
                     icon: "settings",
                     to: "/settings",
                 },
-
                 {
                     label: "Help & Search",
                     icon: "help",
                     onClick: openCommand,
                 },
-
                 {
                     label: "Logout",
                     icon: "logout",
@@ -169,133 +118,37 @@ const LayoutInner = (): JSX.Element => {
     ];
 
     return (
-
-        <LayoutContext.Provider
-            value={{
-                openCreateBoard,
-                openCommand
-            }}
-        >
-
+        <LayoutContext.Provider value={{ openCreateBoard, openCommand }}>
             <div className="h-screen overflow-hidden">
-
                 <Sidebar
-
                     collapsed={collapsed}
-
                     onToggle={toggleSidebar}
-
                     header={{
                         title: "Flowboard",
-
-                        logo:
-                            <Icon name="bolt" filled={true} size={20}
-                                className="
-                h-5 w-5
-                fill-white
-                text-white"
-                            />
-
+                        logo: <Icon name="bolt" filled={true} size={20} className="h-5 w-5 fill-white text-white" />
                     }}
-
-                    sections={
-                        sidebarSections
-                    }
-
+                    sections={sidebarSections}
                     bottomContent={
-
-                        <button
-                            onClick={openCreateBoard}
-                            className="
-              brand-gradient
-              rounded-2xl
-              p-4
-              text-left
-              text-white
-              "
-                        >
-
-                            <p className="font-semibold">
-                                Plan with AI
-                            </p>
-
-                            <p className="text-xs opacity-80">
-                                Turn a goal into backlog
-                            </p>
-
+                        <button onClick={openCreateBoard} className="brand-gradient rounded-2xl p-4 text-left text-white">
+                            <p className="font-semibold">Plan with AI</p>
+                            <p className="text-xs opacity-80">Turn a goal into backlog</p>
                         </button>
-
                     }
-
-                    footer={
-
-                        <div>
-                            User Profile Here
-                        </div>
-
-                    }
-
+                    footer={<div>User Profile Here</div>}
                 />
-
-                <main
-
-                    className={cn(
-
-                        "flex h-screen min-w-0 flex-col overflow-hidden transition-[padding] duration-300",
-
-                        collapsed
-                            ? "md:pl-[92px]"
-                            : "md:pl-[280px]"
-
-                    )}
-
-                >
-
+                <main className={cn("flex h-screen min-w-0 flex-col overflow-hidden transition-[padding] duration-300", collapsed ? "md:pl-23" : "md:pl-70")}>
                     <Outlet />
-
                 </main>
-
             </div>
-
-            {/* <CreateBoardModal
-
-                open={createOpen}
-
-                onClose={() =>
-                    setCreateOpen(false)
-                }
-
-            /> */}
-
-            {/* <CommandMenu
-
-                open={commandOpen}
-
-                onClose={() =>
-                    setCommandOpen(false)
-                }
-
-                onCreateBoard={() => {
-
-                    setCommandOpen(false);
-
-                    setCreateOpen(true);
-
-                }}
-
-            /> */}
-
-        </LayoutContext.Provider>
-
+        </LayoutContext.Provider >
     );
-
 };
 
 const AppLayout = (): JSX.Element => (
 
-    // <BoardsProvider>
+    // <BoardsProvider> // add providers if needed
 
-        <LayoutInner />
+    <LayoutInner />
 
     // </BoardsProvider>
 

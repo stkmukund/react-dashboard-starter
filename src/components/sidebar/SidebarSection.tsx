@@ -15,13 +15,7 @@ export default function SidebarSection({
         <div className="mb-3">
 
             {section.title && !collapsed && (
-                <p className="
-px-4 pb-2 pt-4
-text-[11px]
-font-semibold
-uppercase
-tracking-widest
-text-faint">
+                <p className="px-4 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-widest text-faint">
                     {section.title}
                 </p>
             )}
