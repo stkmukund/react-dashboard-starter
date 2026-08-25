@@ -25,7 +25,7 @@ export default function Sidebar({
                 onToggle={onToggle}
                 config={header}
             />
-            <div className="flex-1 overflow-y-auto no-scrollbar">
+            <div className="h-full flex flex-col justify-between overflow-y-auto no-scrollbar">
                 {
                     sections.map((section, index) => (
                         <SidebarSection
