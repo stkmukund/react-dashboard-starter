@@ -1,5 +1,5 @@
 import { useMemo, type JSX } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { appConfig, sidebarNavigation } from "../../config";
 import { useAuth } from "../../context/AuthContext";
 import { cn } from "../../lib/utils";
@@ -13,6 +13,16 @@ const AppLayoutContent = (): JSX.Element => {
     const { logout, user } = useAuth();
     const { sidebarCollapsed, commandOpen, setCommandOpen, toggleCommand } = useLayout();
     const navigate = useNavigate();
+    const location = useLocation();
+    const currentItem = useMemo(() => {
+        for (const sec of sidebarNavigation) {
+            const match = sec.items.find(i => i.to === location.pathname);
+            if (match) return match;
+        }
+        return null;
+    }, [location.pathname]);
+    const topbarTitle = currentItem?.label ?? "Dashboard";
+const topbarSubtitle = currentItem?.description ?? "";
 
     // Map config sections to SidebarSection format with bound actions
     const sidebarSections: SidebarSection[] = useMemo(() => {
@@ -119,8 +129,8 @@ const AppLayoutContent = (): JSX.Element => {
             <DashboardLayout
                 topbar={
                     <AppTopbar
-                        title="Dashboard"
-                        subtitle="Welcome back to your workspace"
+                        title={topbarTitle}
+                        subtitle={topbarSubtitle}
                     />
                 }
                 sidebarConfig={{

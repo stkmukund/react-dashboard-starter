@@ -13,6 +13,8 @@ export interface NavItem {
     shortcut?: string;
     description?: string;
     disabled?: boolean;
+
+
 }
 
 export interface NavSection {
@@ -29,24 +31,32 @@ export const sidebarNavigation: NavSection[] = [
                 icon: "dashboard",
                 to: "/dashboard",
                 description: "Go to your main dashboard overview",
+
+
             },
             {
                 label: "My Tasks",
                 icon: "task_alt",
                 to: "/my-tasks",
                 description: "View and manage all assigned tasks",
+
+
             },
             {
                 label: "Calendar",
                 icon: "calendar_month",
                 to: "/calendar",
                 description: "View scheduled dates and milestones",
+
+
             },
             {
                 label: "Team",
                 icon: "groups",
                 to: "/team",
                 description: "Manage team members and roles",
+
+
             },
         ],
     },
@@ -58,6 +68,8 @@ export const sidebarNavigation: NavSection[] = [
                 icon: "settings",
                 to: "/settings",
                 description: "Preferences, appearance and account",
+
+
             },
         ],
     },
