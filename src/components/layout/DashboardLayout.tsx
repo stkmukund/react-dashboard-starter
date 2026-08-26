@@ -4,7 +4,7 @@ import { Sidebar, type SidebarProps } from "../sidebar";
 import { useLayout } from "./LayoutContext";
 
 export interface DashboardLayoutProps {
-    sidebar?: ReactNode | ((props: { collapsed: boolean; toggle: () => void }) => ReactNode);
+    sidebar?: ReactNode | ((props: { collapsed: boolean; toggle: () => void; mobileOpen: boolean; closeMobile: () => void }) => ReactNode);
     sidebarConfig?: Omit<SidebarProps, "collapsed" | "onToggle">;
     children?: ReactNode;
     topbar?: ReactNode;
@@ -20,7 +20,13 @@ export default function DashboardLayout({
     enableCommandShortcut = true,
     className,
 }: DashboardLayoutProps) {
-    const { sidebarCollapsed, toggleSidebar, toggleCommand } = useLayout();
+    const {
+        sidebarCollapsed,
+        toggleSidebar,
+        mobileSidebarOpen,
+        setMobileSidebarOpen,
+        toggleCommand,
+    } = useLayout();
 
     useEffect(() => {
         if (!enableCommandShortcut) return;
@@ -42,7 +48,12 @@ export default function DashboardLayout({
         <div className={cn("h-screen overflow-hidden", className)}>
             {/* Sidebar Rendering */}
             {typeof sidebar === "function"
-                ? sidebar({ collapsed: sidebarCollapsed, toggle: toggleSidebar })
+                ? sidebar({
+                    collapsed: sidebarCollapsed,
+                    toggle: toggleSidebar,
+                    mobileOpen: mobileSidebarOpen,
+                    closeMobile: () => setMobileSidebarOpen(false),
+                })
                 : sidebar !== undefined
                     ? sidebar
                     : sidebarConfig
@@ -51,6 +62,8 @@ export default function DashboardLayout({
                                 {...sidebarConfig}
                                 collapsed={sidebarCollapsed}
                                 onToggle={toggleSidebar}
+                                mobileOpen={mobileSidebarOpen}
+                                onMobileClose={() => setMobileSidebarOpen(false)}
                             />
                         )
                         : null}

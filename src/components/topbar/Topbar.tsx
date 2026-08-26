@@ -1,6 +1,7 @@
 import type { TopbarProps } from "./types";
 
 import { cn } from "../../lib/utils";
+import Icon from "../ui/Icon";
 
 import TopbarNotification from "./TopbarNotification";
 import TopbarPrimaryAction from "./TopbarPrimaryAction";
@@ -19,6 +20,7 @@ export default function Topbar({
     renderAvatar,
     leftContent,
     rightContent,
+    onMenuClick,
     sticky = true,
     className = "",
 }: TopbarProps) {
@@ -27,17 +29,28 @@ export default function Topbar({
             className={cn(
                 "glass",
                 sticky && "sticky top-0",
-                "z-20 flex h-18 items-center gap-4 border-b px-6",
+                "z-20 flex h-18 items-center gap-3 border-b px-4 md:gap-4 md:px-6",
                 className,
             )}
         >
+            {onMenuClick && (
+                <button
+                    type="button"
+                    onClick={onMenuClick}
+                    aria-label="Open menu"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-surface text-ink shadow-(--shadow-card) transition-colors hover:bg-surface-2 md:hidden"
+                >
+                    <Icon name="menu" size={20} />
+                </button>
+            )}
+
             <TopbarHeader
                 title={title}
                 subtitle={subtitle}
                 leftContent={leftContent}
             />
 
-            <div className="ml-auto flex items-center gap-2.5">
+            <div className="ml-auto flex items-center gap-2 md:gap-2.5">
                 <TopbarSearch {...(search ?? {})} />
 
                 {actions}

@@ -53,6 +53,7 @@ export interface TopbarProps {
     renderAvatar?: (user: TopbarUser) => ReactNode;
     leftContent?: ReactNode;
     rightContent?: ReactNode;
+    onMenuClick?: () => void;
     sticky?: boolean;
     className?: string;
 }

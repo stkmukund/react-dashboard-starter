@@ -50,11 +50,17 @@ export interface SidebarProps {
 
   onToggle: () => void;
 
+  mobileOpen?: boolean;
+
+  onMobileClose?: () => void;
+
   header: SidebarHeaderConfig;
 
   sections: SidebarSection[];
 
-  footer?: ReactNode;
+  footer?: ReactNode | ((props: { collapsed: boolean; isMobile: boolean }) => ReactNode);
 
   bottomContent?: ReactNode;
+
+  className?: string;
 }

@@ -11,6 +11,9 @@ interface LayoutContextType {
     sidebarCollapsed: boolean;
     setSidebarCollapsed: (collapsed: boolean | ((prev: boolean) => boolean)) => void;
     toggleSidebar: () => void;
+    mobileSidebarOpen: boolean;
+    setMobileSidebarOpen: (open: boolean | ((prev: boolean) => boolean)) => void;
+    toggleMobileSidebar: () => void;
     commandOpen: boolean;
     setCommandOpen: (open: boolean | ((prev: boolean) => boolean)) => void;
     toggleCommand: () => void;
@@ -33,6 +36,7 @@ export const LayoutProvider = ({
         return storage.local.get<boolean>(storageKey, defaultCollapsed) ?? defaultCollapsed;
     });
 
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const [commandOpen, setCommandOpen] = useState(false);
 
     const setSidebarCollapsed = useCallback(
@@ -50,6 +54,10 @@ export const LayoutProvider = ({
         setSidebarCollapsed((prev) => !prev);
     }, [setSidebarCollapsed]);
 
+    const toggleMobileSidebar = useCallback(() => {
+        setMobileSidebarOpen((prev) => !prev);
+    }, []);
+
     const toggleCommand = useCallback(() => {
         setCommandOpen((prev) => !prev);
     }, []);
@@ -60,6 +68,9 @@ export const LayoutProvider = ({
                 sidebarCollapsed,
                 setSidebarCollapsed,
                 toggleSidebar,
+                mobileSidebarOpen,
+                setMobileSidebarOpen,
+                toggleMobileSidebar,
                 commandOpen,
                 setCommandOpen,
                 toggleCommand,

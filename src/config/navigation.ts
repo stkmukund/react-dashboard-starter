@@ -13,6 +13,8 @@ export interface NavItem {
     shortcut?: string;
     description?: string;
     disabled?: boolean;
+
+
 }
 
 export interface NavSection {
@@ -29,12 +31,16 @@ export const sidebarNavigation: NavSection[] = [
                 icon: "dashboard",
                 to: "/dashboard",
                 description: "Go to your main dashboard overview",
+
+
             },
             {
                 label: "Report",
                 icon: "bar_chart",
                 to: "/report",
                 description: "View and manage all assigned tasks",
+
+
             },
             // {
             //     label: "Calendar",
@@ -58,6 +64,8 @@ export const sidebarNavigation: NavSection[] = [
                 icon: "settings",
                 to: "/settings",
                 description: "Preferences, appearance and account",
+
+
             },
         ],
     },
