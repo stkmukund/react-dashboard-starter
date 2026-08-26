@@ -6,11 +6,13 @@ import type { SidebarItem as Item } from "./SidebarTypes";
 interface Props {
     item: Item;
     collapsed: boolean;
+    onItemClick?: () => void;
 }
 
 export default function SidebarItem({
     item,
-    collapsed
+    collapsed,
+    onItemClick,
 }: Props) {
     const location = useLocation();
 
@@ -75,6 +77,9 @@ export default function SidebarItem({
                 to={item.to}
                 end={item.end}
                 title={collapsed ? item.label : undefined}
+                onClick={() => {
+                    if (onItemClick) onItemClick();
+                }}
                 className={({ isActive }) => getItemClassName(getIsActive(isActive))}
             >
                 {({ isActive }) => renderContent(getIsActive(isActive))}
@@ -86,8 +91,12 @@ export default function SidebarItem({
 
     return (
         <button
+            type="button"
             disabled={item.disabled}
-            onClick={item.onClick}
+            onClick={() => {
+                item.onClick?.();
+                if (onItemClick) onItemClick();
+            }}
             title={collapsed ? item.label : undefined}
             className={cn(
                 getItemClassName(buttonIsActive),

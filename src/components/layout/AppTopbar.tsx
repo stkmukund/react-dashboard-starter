@@ -14,6 +14,7 @@ export interface AppTopbarProps {
         onClick: () => void;
     };
     onSearchClick?: () => void;
+    onMenuClick?: () => void;
     searchPlaceholder?: string;
 }
 
@@ -23,19 +24,22 @@ export default function AppTopbar({
     actions,
     primaryAction,
     onSearchClick,
+    onMenuClick,
     searchPlaceholder = "Search…",
 }: AppTopbarProps) {
     const { user, logout } = useAuth();
-    const { toggleCommand } = useLayout();
+    const { toggleCommand, toggleMobileSidebar } = useLayout();
     const navigate = useNavigate();
 
     const handleSearch = onSearchClick ?? toggleCommand;
+    const handleMenuClick = onMenuClick ?? toggleMobileSidebar;
 
     return (
         <Topbar
             title={title}
             subtitle={subtitle}
             actions={actions}
+            onMenuClick={handleMenuClick}
             search={{
                 placeholder: searchPlaceholder,
                 shortcut: "K",
