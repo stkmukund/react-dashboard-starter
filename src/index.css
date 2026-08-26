@@ -36,13 +36,13 @@ body {
   --color-ink: #16161d;
 
   /* brand — forest green */
-  --color-brand-50: #ebf6ef;
-  --color-brand-100: #d2e9db;
-  --color-brand-300: #8bc4a4;
-  --color-brand-400: #57a47b;
-  --color-brand-500: #2f8159;
-  --color-brand-600: #246646;
-  --color-brand-700: #1d5038;
+  --color-brand-50: #eaf5fb;
+  --color-brand-100: #d2eaf5;
+  --color-brand-300: #8bc8e2;
+  --color-brand-400: #57acd0;
+  --color-brand-500: #2389b8;
+  --color-brand-600: #1b6f99;
+  --color-brand-700: #155e8a;
 
   --color-muted: #5d5d6e;
   --color-faint: #9a9aae;
@@ -272,7 +272,12 @@ h3,
   }
 
   .text-gradient {
-    background-image: linear-gradient(135deg, #2f8159 0%, #4faf7c 100%);
+    background-image: linear-gradient(
+      140deg,
+      #0f2f4f 0%,
+      #155e8a 52%,
+      #2389b8 100%
+    );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;

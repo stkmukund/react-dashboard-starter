@@ -8,7 +8,7 @@ export const appConfig = {
     name: "Ricardo",
     tagline: "Plan smarter, ship faster.",
     description: "Turn a one-line goal into a prioritized backlog and keep your whole team moving in real time.",
-    logoIcon: "bolt",
+    logoIcon: "assignment",
     links: {
         github: "https://github.com/vitejs/vite",
         discord: "https://chat.vite.dev",
