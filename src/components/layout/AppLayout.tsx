@@ -35,6 +35,7 @@ const topbarSubtitle = currentItem?.description ?? "";
                 end: item.end,
                 badge: item.badge,
                 disabled: item.disabled,
+                onClick: (item as any).onClick,
             })),
         }));
 
