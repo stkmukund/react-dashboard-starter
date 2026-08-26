@@ -7,6 +7,7 @@ import LoginPage from './pages/login'
 import NotFound from './pages/notFound'
 import RegisterPage from './pages/register'
 import { ProtectedRoute, PublicOnlyRoute } from './routes'
+import Report from './pages/report'
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
             }
           >
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/report" element={<Report />} />
           </Route>
 
           <Route path="/404" element={<NotFound />} />

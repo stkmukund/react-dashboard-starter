@@ -31,23 +31,23 @@ export const sidebarNavigation: NavSection[] = [
                 description: "Go to your main dashboard overview",
             },
             {
-                label: "My Tasks",
-                icon: "task_alt",
-                to: "/my-tasks",
+                label: "Report",
+                icon: "bar_chart",
+                to: "/report",
                 description: "View and manage all assigned tasks",
             },
-            {
-                label: "Calendar",
-                icon: "calendar_month",
-                to: "/calendar",
-                description: "View scheduled dates and milestones",
-            },
-            {
-                label: "Team",
-                icon: "groups",
-                to: "/team",
-                description: "Manage team members and roles",
-            },
+            // {
+            //     label: "Calendar",
+            //     icon: "calendar_month",
+            //     to: "/calendar",
+            //     description: "View scheduled dates and milestones",
+            // },
+            // {
+            //     label: "Team",
+            //     icon: "groups",
+            //     to: "/team",
+            //     description: "Manage team members and roles",
+            // },
         ],
     },
     {
