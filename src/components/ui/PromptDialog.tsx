@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useRef, useState } from "react";
+import React, { type FormEvent, useState } from "react";
 import Modal from "./Modal";
 import Button from "./Button";
 import { Input } from "./Input";
@@ -16,11 +16,7 @@ export interface PromptDialogProps {
   loading?: boolean;
 }
 
-/**
- * Reusable single-field prompt modal (replaces window.prompt).
- * Calls onSubmit(trimmedValue) when confirmed.
- */
-const PromptDialog: React.FC<PromptDialogProps> = ({
+export const PromptDialog: React.FC<PromptDialogProps> = ({
   open,
   onClose,
   onSubmit,
@@ -33,22 +29,15 @@ const PromptDialog: React.FC<PromptDialogProps> = ({
   loading = false,
 }) => {
   const [value, setValue] = useState<string>(defaultValue);
-  const submitted = useRef<boolean>(false);
-
-  useEffect(() => {
-    if (open) {
-      setValue(defaultValue);
-      submitted.current = false;
-    }
-  }, [open, defaultValue]);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const trimmed = value.trim();
-    if (!trimmed || submitted.current) return;
+    if (!trimmed || isSubmitting) return;
 
-    submitted.current = true;
+    setIsSubmitting(true);
     onSubmit(trimmed);
   };
 

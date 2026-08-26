@@ -1,7 +1,6 @@
 
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "../../lib/utils";
-import Icon from "./Icon";
 import Spinner from "./Spinner";
 
 const variants = {

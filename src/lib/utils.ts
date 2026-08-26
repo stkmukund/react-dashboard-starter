@@ -1,7 +1,8 @@
 import { formatDistanceToNow, format, isPast, isToday, isTomorrow } from "date-fns";
 
 /** Tiny classnames joiner (no extra deps). */
-export const cn = (...args: any[]) => args.flat().filter(Boolean).join(" ");
+export const cn = (...args: (string | boolean | null | undefined | unknown)[]) =>
+  args.flat().filter(Boolean).join(" ");
 
 export const PRIORITIES = [
   { value: "low", label: "Low", color: "var(--color-priority-low)" },
@@ -10,7 +11,7 @@ export const PRIORITIES = [
   { value: "urgent", label: "Urgent", color: "var(--color-priority-urgent)" },
 ];
 
-export const priorityMeta = (value: any) =>
+export const priorityMeta = (value: unknown) =>
   PRIORITIES.find((p) => p.value === value) || PRIORITIES[1];
 
 // Pastel accents assigned to columns by index (Linear/Notion-style boards).

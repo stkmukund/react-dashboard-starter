@@ -47,10 +47,14 @@ export default function CommandMenu({
     const inputRef = useRef<HTMLInputElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
 
+    const handleClose = () => {
+        setQuery("");
+        setActive(0);
+        onClose();
+    };
+
     useEffect(() => {
         if (open) {
-            setQuery("");
-            setActive(0);
             const timer = setTimeout(() => inputRef.current?.focus(), 40);
             return () => clearTimeout(timer);
         }
@@ -72,20 +76,17 @@ export default function CommandMenu({
         });
     }, [items, query, filterItem]);
 
-    // Keep active item in valid range when filtered items change
-    useEffect(() => {
-        setActive(0);
-    }, [filteredItems.length]);
+    const activeIndex = active >= filteredItems.length ? 0 : active;
 
     const run = (item?: CommandItem) => {
         if (!item || item.disabled) return;
-        onClose();
+        handleClose();
         item.onSelect?.();
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (filteredItems.length === 0) {
-            if (e.key === "Escape") onClose();
+            if (e.key === "Escape") handleClose();
             return;
         }
 
@@ -97,10 +98,10 @@ export default function CommandMenu({
             setActive((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
         } else if (e.key === "Enter") {
             e.preventDefault();
-            run(filteredItems[active]);
+            run(filteredItems[activeIndex]);
         } else if (e.key === "Escape") {
             e.preventDefault();
-            onClose();
+            handleClose();
         }
     };
 
