@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { appConfig } from "../../config";
 import Icon from "../ui/Icon";
 import KanbanDemo from "../landing/KanbanDemo";
 
@@ -9,8 +10,8 @@ interface AuthAsideProps {
 }
 
 const AuthAside: React.FC<AuthAsideProps> = ({
-    title = "Plan smarter, ship faster.",
-    subtitle = "Turn a one-line goal into a prioritized backlog and keep your whole team moving in real time.",
+    title = appConfig.tagline,
+    subtitle = appConfig.description,
 }) => {
     return (
         <aside className="brand-gradient animate-gradient-pan relative hidden w-1/2 overflow-hidden lg:flex">
@@ -85,7 +86,7 @@ const AuthAside: React.FC<AuthAsideProps> = ({
             >
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 ring-1 ring-inset ring-white/20">
                     <Icon
-                        name="bolt"
+                        name={appConfig.logoIcon}
                         className="text-white"
                         size={18}
                         filled
@@ -93,7 +94,7 @@ const AuthAside: React.FC<AuthAsideProps> = ({
                 </span>
 
                 <span className="font-display text-lg font-bold tracking-tight">
-                    Flowboard
+                    {appConfig.name}
                 </span>
             </Link>
 

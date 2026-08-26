@@ -65,16 +65,15 @@ interface BadgeProps {
     className?: string;
 }
 
-export const Badge: React.FC<BadgeProps> = ({
-    children,
-    className,
-}) => (
-    <span
-        className={cn(
-            "inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-medium tracking-tight text-muted",
-            className
-        )}
-    >
-        {children}
-    </span>
-);
+export default function Badge({ children, className }: BadgeProps) {
+    return (
+        <span
+            className={cn(
+                "inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-medium tracking-tight text-muted",
+                className
+            )}
+        >
+            {children}
+        </span>
+    );
+}

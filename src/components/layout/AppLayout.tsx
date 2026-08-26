@@ -1,175 +1,162 @@
-import {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useState,
-    type JSX,
-} from "react";
+import { useMemo, type JSX } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { appConfig, sidebarNavigation } from "../../config";
 import { useAuth } from "../../context/AuthContext";
 import { cn } from "../../lib/utils";
-import { Sidebar, type SidebarSection } from "../sidebar";
-import Icon from "../ui/Icon";
-import Avatar from "../ui/Avatar";
+import type { SidebarSection } from "../sidebar";
+import { Avatar, CommandMenu, type CommandItem, Icon } from "../ui";
+import AppTopbar from "./AppTopbar";
+import DashboardLayout from "./DashboardLayout";
+import { LayoutProvider, useLayout } from "./LayoutContext";
 
-interface LayoutContextType {
-    openCreateBoard: () => void;
-    openCommand: () => void;
-}
-
-const LayoutContext = createContext<LayoutContextType | undefined>(
-    undefined
-);
-
-export const useLayout = (): LayoutContextType => {
-    const context = useContext(LayoutContext);
-
-    if (!context) {
-        throw new Error("useLayout must be used within AppLayout");
-    }
-
-    return context;
-};
-
-const LayoutInner = (): JSX.Element => {
-    const navigate = useNavigate();
+const AppLayoutContent = (): JSX.Element => {
     const { logout, user } = useAuth();
-    const [createOpen, setCreateOpen] = useState(false);
-    const [commandOpen, setCommandOpen] = useState(false);
+    const { sidebarCollapsed, commandOpen, setCommandOpen, toggleCommand } = useLayout();
+    const navigate = useNavigate();
 
-    const [collapsed, setCollapsed] = useState(() => localStorage.getItem("sidebar-collapsed") === "true");
+    // Map config sections to SidebarSection format with bound actions
+    const sidebarSections: SidebarSection[] = useMemo(() => {
+        const sections: SidebarSection[] = sidebarNavigation.map((sec) => ({
+            title: sec.title,
+            items: sec.items.map((item) => ({
+                label: item.label,
+                icon: item.icon,
+                to: item.to,
+                end: item.end,
+                badge: item.badge,
+                disabled: item.disabled,
+            })),
+        }));
 
-    const openCreateBoard = useCallback(() => { setCreateOpen(true) }, []);
+        // Append standard utility actions (Help & Search, Logout) to the last section
+        const generalIndex = sections.findIndex((s) => s.title === "General");
+        const appendTarget = generalIndex >= 0 ? sections[generalIndex] : sections[sections.length - 1];
 
-    const openCommand = useCallback(() => {
-        setCommandOpen(true);
-    }, []);
-
-    const toggleSidebar = useCallback(() => {
-        setCollapsed((prev) => {
-            const next = !prev;
-            localStorage.setItem("sidebar-collapsed", String(next));
-            return next;
-        });
-    }, []);
-
-    useEffect(() => {
-        const onKey = (e: KeyboardEvent) => {
-            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-                e.preventDefault();
-                setCommandOpen(value => !value);
-            }
-        };
-
-        document.addEventListener("keydown", onKey);
-
-        return () => {
-            document.removeEventListener("keydown", onKey);
-        };
-
-    }, []);
-
-    const sidebarSections: SidebarSection[] = [
-        {
-            title: "Menu",
-            items: [
-                {
-                    label: "Dashboard",
-                    icon: "dashboard",
-                    to: "/dashboard",
-                },
-                {
-                    label: "My Tasks",
-                    icon: "task_alt",
-                    to: "/my-tasks",
-                },
-                {
-                    label: "Calendar",
-                    icon: "calendar_month",
-                    to: "/calendar",
-                },
-                {
-                    label: "Team",
-                    icon: "groups",
-                    to: "/team",
-                },
-            ],
-        },
-        {
-            title: "General",
-            items: [
-                {
-                    label: "Settings",
-                    icon: "settings",
-                    to: "/settings",
-                },
+        if (appendTarget && appendTarget.items) {
+            appendTarget.items = [
+                ...appendTarget.items,
                 {
                     label: "Help & Search",
                     icon: "help",
-                    onClick: openCommand,
+                    onClick: toggleCommand,
                 },
                 {
                     label: "Logout",
                     icon: "logout",
                     onClick: logout,
                 },
-            ],
-        },
-    ];
+            ];
+        }
 
-    // Sidebar footer
-    const footerUserData = () => (
+        return sections;
+    }, [logout, toggleCommand]);
+
+    // Build command menu items dynamically from navigation config + common actions
+    const commandItems: CommandItem[] = useMemo(() => {
+        const navItems: CommandItem[] = sidebarNavigation.flatMap((sec) =>
+            sec.items
+                .filter((item) => Boolean(item.to))
+                .map((item) => ({
+                    id: `nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`,
+                    label: item.label,
+                    description: item.description,
+                    category: sec.title || "Navigation",
+                    icon: item.icon,
+                    shortcut: item.shortcut,
+                    onSelect: () => item.to && navigate(item.to),
+                }))
+        );
+
+        const utilityItems: CommandItem[] = [
+            {
+                id: "action-logout",
+                label: "Log out",
+                description: "End your current session",
+                category: "Account",
+                icon: "logout",
+                onSelect: async () => {
+                    await logout();
+                    navigate("/login");
+                },
+            },
+        ];
+
+        return [...navItems, ...utilityItems];
+    }, [navigate, logout]);
+
+    const footerUserData = (
         <>
-            < div className="mx-3 mt-3 border-t" />
-            <div className={cn("flex h-16 items-center", collapsed ? "justify-center px-2" : "gap-3 px-3.5")}>
-                <Avatar name={user?.name} id={user?.id} src={user?.avatar_url} size="sm" className="shrink-0" />
-                {!collapsed && (
+            <div className="mx-3 mt-3 border-t" />
+            <div
+                className={cn(
+                    "flex h-16 items-center",
+                    sidebarCollapsed ? "justify-center px-2" : "gap-3 px-3.5"
+                )}
+            >
+                <Avatar
+                    name={user?.name || ""}
+                    id={user?.id}
+                    src={user?.avatar_url || undefined}
+                    size="sm"
+                    className="shrink-0"
+                />
+                {!sidebarCollapsed && (
                     <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-ink">{user?.name}</p>
-                        <p className="truncate text-xs text-faint">{user?.email}</p>
+                        <p className="truncate text-sm font-semibold text-ink">
+                            {user?.name}
+                        </p>
+                        <p className="truncate text-xs text-faint">
+                            {user?.email}
+                        </p>
                     </div>
                 )}
             </div>
         </>
-    )
+    );
 
     return (
-        <LayoutContext.Provider value={{ openCreateBoard, openCommand }}>
-            <div className="h-screen overflow-hidden">
-                <Sidebar
-                    collapsed={collapsed}
-                    onToggle={toggleSidebar}
-                    header={{
-                        title: "Flowboard",
-                        logo: <Icon name="bolt" filled={true} size={20} className="h-5 w-5 fill-white text-white" />
-                    }}
-                    sections={sidebarSections}
-                    // will add bottom content in future
-                    // bottomContent={
-                    //     <button onClick={openCreateBoard} className="brand-gradient rounded-2xl p-4 text-left text-white">
-                    //         <p className="font-semibold">Plan with AI</p>
-                    //         <p className="text-xs opacity-80">Turn a goal into backlog</p>
-                    //     </button>
-                    // }
-                    footer={footerUserData()}
-                />
-                <main className={cn("flex h-screen min-w-0 flex-col overflow-hidden transition-[padding] duration-300", collapsed ? "md:pl-23" : "md:pl-70")}>
-                    <Outlet />
-                </main>
-            </div>
-        </LayoutContext.Provider >
+        <>
+            <DashboardLayout
+                topbar={
+                    <AppTopbar
+                        title="Dashboard"
+                        subtitle="Welcome back to your workspace"
+                    />
+                }
+                sidebarConfig={{
+                    header: {
+                        title: appConfig.name,
+                        logo: (
+                            <Icon
+                                name={appConfig.logoIcon}
+                                filled={true}
+                                size={20}
+                                className="h-5 w-5 fill-white text-white"
+                            />
+                        ),
+                    },
+                    sections: sidebarSections,
+                    footer: footerUserData,
+                }}
+            >
+                <Outlet />
+            </DashboardLayout>
+
+            {/* Global Command & Search Menu */}
+            <CommandMenu
+                open={commandOpen}
+                onClose={() => setCommandOpen(false)}
+                items={commandItems}
+                placeholder="Search commands, pages, or actions…"
+            />
+        </>
     );
 };
 
-const AppLayout = (): JSX.Element => (
-
-    // <BoardsProvider> // add providers if needed
-
-    <LayoutInner />
-
-    // </BoardsProvider>
-
-);
-
-export default AppLayout;
+export default function AppLayout(): JSX.Element {
+    return (
+        <LayoutProvider>
+            <AppLayoutContent />
+        </LayoutProvider>
+    );
+}

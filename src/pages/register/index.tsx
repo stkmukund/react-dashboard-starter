@@ -2,11 +2,12 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import Icon from "../../components/ui/Icon";
-import { useAuth } from "../../context/AuthContext";
-import { Input } from "../../components/ui/Input";
-import Button from "../../components/ui/Button";
+import { appConfig } from "../../config";
 import AuthAside from "../../components/auth/AuthAside";
+import Button from "../../components/ui/Button";
+import Icon from "../../components/ui/Icon";
+import { Input } from "../../components/ui/Input";
+import { useAuth } from "../../context/AuthContext";
 
 interface RegisterForm {
     name: string;
@@ -57,7 +58,7 @@ const RegisterPage: React.FC = () => {
                     >
                         <div className="brand-gradient flex h-10 w-10 items-center justify-center rounded-2xl shadow-(--shadow-card)">
                             <Icon
-                                name="bolt"
+                                name={appConfig.logoIcon}
                                 filled={true}
                                 size={20}
                                 className="text-white"
@@ -65,7 +66,7 @@ const RegisterPage: React.FC = () => {
                         </div>
 
                         <span className="font-display text-lg font-bold tracking-tight">
-                            Flowboard
+                            {appConfig.name}
                         </span>
                     </Link>
 

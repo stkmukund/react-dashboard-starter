@@ -2,6 +2,7 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { appConfig } from "../../config";
 import AuthAside from "../../components/auth/AuthAside";
 import Button from "../../components/ui/Button";
 import Icon from "../../components/ui/Icon";
@@ -66,7 +67,7 @@ const LoginPage = () => {
           >
             <div className="brand-gradient flex h-10 w-10 items-center justify-center rounded-2xl shadow-(--shadow-card)">
               <Icon
-                name="bolt"
+                name={appConfig.logoIcon}
                 filled={true}
                 size={20}
                 className="text-white"
@@ -74,7 +75,7 @@ const LoginPage = () => {
             </div>
 
             <span className="font-display text-lg font-bold tracking-tight">
-              Flowboard
+              {appConfig.name}
             </span>
           </Link>
 
@@ -144,7 +145,7 @@ const LoginPage = () => {
       </div>
 
       <AuthAside
-        title="Welcome back to Flowboard"
+        title={`Welcome back to ${appConfig.name}`}
         subtitle="Log in and pick up right where you and your team left off."
       />
     </div>

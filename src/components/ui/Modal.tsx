@@ -1,8 +1,8 @@
-import React, { ReactNode, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "../../lib/utils";
+import Icon from "./Icon";
 
 const widths = {
   sm: "max-w-md",
@@ -64,7 +64,7 @@ const Modal: React.FC<ModalProps> = ({
 
           <motion.div
             className={cn(
-              "card relative z-10 mt-8 w-full rounded-3xl p-6 shadow-[var(--shadow-lift)]",
+              "card relative z-10 mt-8 w-full rounded-3xl p-6 shadow-(--shadow-lift)",
               widths[size]
             )}
             initial={{ opacity: 0, scale: 0.97, y: 10 }}
@@ -93,7 +93,7 @@ const Modal: React.FC<ModalProps> = ({
                     onClick={onClose}
                     className="-mr-1 -mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-ink"
                   >
-                    <X className="h-4.5 w-4.5" />
+                    <Icon name="close" size={18} />
                   </button>
                 )}
               </div>
