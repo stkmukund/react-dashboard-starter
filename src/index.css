@@ -111,12 +111,16 @@ body::before {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(60rem 42rem at 92% -14%,
+    radial-gradient(
+      60rem 42rem at 92% -14%,
       rgba(47, 129, 89, 0.12),
-      transparent 60%),
-    radial-gradient(48rem 40rem at -10% 110%,
+      transparent 60%
+    ),
+    radial-gradient(
+      48rem 40rem at -10% 110%,
       rgba(63, 158, 108, 0.09),
-      transparent 55%);
+      transparent 55%
+    );
   pointer-events: none;
 }
 
@@ -200,10 +204,12 @@ h3,
 
   /* the brand gradient, reusable — deep forest → fresh green */
   .brand-gradient {
-    background-image: linear-gradient(140deg,
-        #1c4430 0%,
-        #2c6b49 52%,
-        #34825a 100%);
+    background-image: linear-gradient(
+      140deg,
+      #0f2f4f 0%,
+      #155e8a 52%,
+      #2389b8 100%
+    );
   }
 }
 
@@ -226,7 +232,8 @@ h3,
     stroke-dashoffset: 120;
   }
 
-  .icon-draw.is-drawing :is(path, line, polyline, polygon, circle, rect, ellipse) {
+  .icon-draw.is-drawing
+    :is(path, line, polyline, polygon, circle, rect, ellipse) {
     animation: icon-draw 3s ease-in-out infinite;
     animation-delay: var(--draw-delay, 0s);
   }
@@ -239,7 +246,9 @@ h3,
     }
   }
 
-  [data-reduce-motion="true"] .icon-draw :is(path, line, polyline, polygon, circle, rect, ellipse) {
+  [data-reduce-motion="true"]
+    .icon-draw
+    :is(path, line, polyline, polygon, circle, rect, ellipse) {
     stroke-dashoffset: 0;
     animation: none;
   }
@@ -255,9 +264,11 @@ h3,
 
   /* diagonal hatch — used for "empty / no data" chart bars */
   .hatch {
-    background-image: repeating-linear-gradient(135deg,
-        color-mix(in oklab, var(--color-ink) 8%, transparent) 0 1.5px,
-        transparent 1.5px 7px);
+    background-image: repeating-linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--color-ink) 8%, transparent) 0 1.5px,
+      transparent 1.5px 7px
+    );
   }
 
   .text-gradient {
@@ -282,7 +293,6 @@ h3,
 
 /* drifting pan for the hero brand gradient */
 @keyframes gradient-pan {
-
   0%,
   100% {
     background-position: 0% 50%;
@@ -330,9 +340,11 @@ h3,
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(255, 255, 255, 0.75),
-      transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.75),
+    transparent
+  );
   animation: shimmer 1.5s infinite;
 }
