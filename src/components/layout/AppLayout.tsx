@@ -11,7 +11,7 @@ import { LayoutProvider, useLayout } from "./LayoutContext";
 
 const AppLayoutContent = (): JSX.Element => {
     const { logout, user } = useAuth();
-    const { sidebarCollapsed, commandOpen, setCommandOpen, toggleCommand } = useLayout();
+    const { commandOpen, setCommandOpen, toggleCommand } = useLayout();
     const navigate = useNavigate();
     const location = useLocation();
     const currentItem = useMemo(() => {

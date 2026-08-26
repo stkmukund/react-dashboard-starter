@@ -38,7 +38,7 @@ export const sidebarNavigation: NavSection[] = [
                 label: "Report",
                 icon: "bar_chart",
                 to: "/report",
-                description: "View and manage all assigned tasks",
+                description: "View and manage all data",
 
 
             },
