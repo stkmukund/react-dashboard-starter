@@ -145,6 +145,7 @@ const LayoutInner = (): JSX.Element => {
                         logo: <Icon name="bolt" filled={true} size={20} className="h-5 w-5 fill-white text-white" />
                     }}
                     sections={sidebarSections}
+                    // will add bottom content in future
                     // bottomContent={
                     //     <button onClick={openCreateBoard} className="brand-gradient rounded-2xl p-4 text-left text-white">
                     //         <p className="font-semibold">Plan with AI</p>
