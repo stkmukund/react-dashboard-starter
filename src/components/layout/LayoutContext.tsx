@@ -5,6 +5,7 @@ import {
     useState,
     type ReactNode,
 } from "react";
+import { storage } from "../../lib/storage";
 
 interface LayoutContextType {
     sidebarCollapsed: boolean;
@@ -29,9 +30,7 @@ export const LayoutProvider = ({
     storageKey = "sidebar-collapsed",
 }: LayoutProviderProps) => {
     const [sidebarCollapsed, setSidebarCollapsedState] = useState<boolean>(() => {
-        if (typeof window === "undefined") return defaultCollapsed;
-        const stored = localStorage.getItem(storageKey);
-        return stored !== null ? stored === "true" : defaultCollapsed;
+        return storage.local.get<boolean>(storageKey, defaultCollapsed) ?? defaultCollapsed;
     });
 
     const [commandOpen, setCommandOpen] = useState(false);
@@ -40,11 +39,7 @@ export const LayoutProvider = ({
         (value: boolean | ((prev: boolean) => boolean)) => {
             setSidebarCollapsedState((prev) => {
                 const next = typeof value === "function" ? value(prev) : value;
-                try {
-                    localStorage.setItem(storageKey, String(next));
-                } catch {
-                    // ignore storage errors
-                }
+                storage.local.set(storageKey, next);
                 return next;
             });
         },

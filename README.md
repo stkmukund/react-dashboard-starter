@@ -258,6 +258,46 @@ export const projectService = {
 
 ---
 
+## 💾 Storage Abstraction (`src/lib/storage`)
+
+A centralized, type-safe, and fault-tolerant storage wrapper around `localStorage` and `sessionStorage`.
+
+Application code never calls `localStorage` or `sessionStorage` directly. Instead, all client persistence uses the centralized `storage` handler.
+
+### Key Features
+- **Type-safe serialization**: Transparent JSON serialization and parsing with default fallbacks.
+- **Configurable namespace**: Built-in prefix (`appConfig.storage.prefix`) and suffix to prevent collisions with other apps on the same domain.
+- **SSR & Fallback safe**: Gracefully degrades to an in-memory storage fallback if cookies/storage are disabled or running outside a browser.
+- **Clean API**: `get<T>`, `set<T>`, `remove`, `clear`, `has`, `keys`.
+
+### Usage Example
+
+```ts
+import { storage } from "@/lib/storage";
+
+// Typed localStorage operations
+storage.local.set("sidebar-collapsed", true);
+const isCollapsed = storage.local.get<boolean>("sidebar-collapsed", false);
+storage.local.remove("sidebar-collapsed");
+storage.local.has("sidebar-collapsed"); // boolean
+
+// Typed sessionStorage operations
+interface SessionMeta {
+  tabId: string;
+  openedAt: number;
+}
+storage.session.set<SessionMeta>("tab_meta", { tabId: "tab_1", openedAt: Date.now() });
+const meta = storage.session.get<SessionMeta>("tab_meta");
+
+// Custom namespace creation
+import { createStorage } from "@/lib/storage";
+
+const customStore = createStorage({ prefix: "custom_app_" });
+customStore.local.set("theme", "dark");
+```
+
+---
+
 ## 🛠️ Environment Configuration
 
 Environment access is centralized in [`src/config/env.ts`](file:///d:/Suretek-Builds/react-starter-ts/src/config/env.ts).

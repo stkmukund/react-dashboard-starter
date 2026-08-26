@@ -16,6 +16,10 @@ export const appConfig = {
         bluesky: "https://bsky.app/profile/vite.dev",
         documentation: "https://vite.dev",
     },
+    storage: {
+        prefix: "flowboard_",
+        suffix: "",
+    },
 } as const;
 
 export type AppConfig = typeof appConfig;

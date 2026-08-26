@@ -3,11 +3,13 @@ import { env } from "../config/env";
 import { normalizeApiError } from "./errors";
 import type { ApiClientConfig, RequestOptions, TokenProvider } from "./types";
 
+import { storage } from "../lib/storage";
+
 // Token storage key default
 const DEFAULT_TOKEN_STORAGE_KEY = "auth_token";
 
 let tokenProvider: TokenProvider = () => {
-  return localStorage.getItem(DEFAULT_TOKEN_STORAGE_KEY);
+  return storage.local.get<string>(DEFAULT_TOKEN_STORAGE_KEY);
 };
 
 /**
@@ -22,21 +24,21 @@ export function setTokenProvider(provider: TokenProvider): void {
  * Helper to persist token using standard storage.
  */
 export function setStoredToken(token: string, key = DEFAULT_TOKEN_STORAGE_KEY): void {
-  localStorage.setItem(key, token);
+  storage.local.set(key, token);
 }
 
 /**
  * Helper to retrieve token from standard storage.
  */
 export function getStoredToken(key = DEFAULT_TOKEN_STORAGE_KEY): string | null {
-  return localStorage.getItem(key);
+  return storage.local.get<string>(key);
 }
 
 /**
  * Helper to remove token from standard storage.
  */
 export function clearStoredToken(key = DEFAULT_TOKEN_STORAGE_KEY): void {
-  localStorage.removeItem(key);
+  storage.local.remove(key);
 }
 
 /**
