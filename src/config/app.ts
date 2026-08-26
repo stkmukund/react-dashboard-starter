@@ -5,7 +5,7 @@
  * links, and default metadata for the entire starter template.
  */
 export const appConfig = {
-    name: "Flowboard",
+    name: "Ricardo",
     tagline: "Plan smarter, ship faster.",
     description: "Turn a one-line goal into a prioritized backlog and keep your whole team moving in real time.",
     logoIcon: "bolt",
