@@ -7,7 +7,7 @@ import LoginPage from './pages/login'
 import NotFound from './pages/notFound'
 import RegisterPage from './pages/register'
 import SettingsPage from './pages/settings'
-import TableDemoPage from './pages/demo'
+// import TableDemoPage from './pages/demo'
 import { ProtectedRoute, PublicOnlyRoute } from './routes'
 import Report from './pages/report'
 import { env } from './config'
@@ -45,7 +45,7 @@ function App() {
             }
           >
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/demo" element={<TableDemoPage />} />
+            {/* <Route path="/demo" element={<TableDemoPage />} /> */}
             <Route path="/report" element={<Report />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
