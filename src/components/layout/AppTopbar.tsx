@@ -70,10 +70,10 @@ export default function AppTopbar({
                 />
             )}
             userMenu={[
-                {
-                    label: "Profile",
-                    onClick: () => navigate("/profile"),
-                },
+                // {
+                //     label: "Profile",
+                //     onClick: () => navigate("/profile"),
+                // },
                 {
                     label: "Settings",
                     onClick: () => navigate("/settings"),
