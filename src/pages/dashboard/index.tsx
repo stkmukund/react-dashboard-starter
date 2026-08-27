@@ -7,10 +7,10 @@ export default function DashboardPage() {
             <div className="card rounded-3xl p-6 sm:p-8">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h2 className="font-display text-2xl font-bold tracking-tight text-ink">
+                        <h2 className="font-display text-2xl font-bold tracking-tight text-foreground">
                             Welcome to your dashboard
                         </h2>
-                        <p className="mt-1 text-sm text-muted">
+                        <p className="mt-1 text-sm text-muted-foreground">
                             This is a clean, reusable starter template built with React and TypeScript.
                         </p>
                     </div>
@@ -37,14 +37,14 @@ export default function DashboardPage() {
                 ].map((stat, i) => (
                     <div key={i} className="card rounded-3xl p-5 shadow-(--shadow-card)">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-muted">{stat.title}</span>
+                            <span className="text-xs font-medium text-muted-foreground">{stat.title}</span>
                             <div className="grid h-8 w-8 place-items-center rounded-xl bg-surface-2 text-faint">
                                 <Icon name={stat.icon} size={18} />
                             </div>
                         </div>
                         <div className="mt-3 flex items-baseline gap-2">
-                            <span className="text-2xl font-bold text-ink">{stat.value}</span>
-                            <span className={`text-xs font-semibold ${stat.change.startsWith("+") ? "text-brand-600" : "text-priority-urgent"}`}>
+                            <span className="text-2xl font-bold text-foreground">{stat.value}</span>
+                            <span className={`text-xs font-semibold ${stat.change.startsWith("+") ? "text-success" : "text-destructive"}`}>
                                 {stat.change}
                             </span>
                         </div>

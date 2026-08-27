@@ -293,8 +293,71 @@ const meta = storage.session.get<SessionMeta>("tab_meta");
 import { createStorage } from "@/lib/storage";
 
 const customStore = createStorage({ prefix: "custom_app_" });
-customStore.local.set("theme", "dark");
+---
+
+## 🎨 Theme & Brand Customization
+
+The dashboard starter features a **centralized, semantic design token architecture**. You can rebrand the entire application (primary brand color, hero gradients, button hover glows, active sidebar items, input focus rings, and ambient background washes) in **one place** without touching individual components.
+
+### 1. Where Theme Colors Are Defined
+
+- **CSS Variables & Design Tokens**: [`src/index.css`](file:///d:/Suretek-Builds/react-starter-ts/src/index.css) (`:root` and `.dark` blocks)
+- **Tailwind Tokens**: Mapped in [`src/index.css`](file:///d:/Suretek-Builds/react-starter-ts/src/index.css) under `@theme`
+- **Runtime Metadata & Types**: [`src/config/theme.ts`](file:///d:/Suretek-Builds/react-starter-ts/src/config/theme.ts)
+
+### 2. How to Rebrand the Entire App in 1 Minute
+
+Open [`src/index.css`](file:///d:/Suretek-Builds/react-starter-ts/src/index.css) and update the brand variables in `:root`:
+
+```css
+:root {
+  /* Change this to your company / product primary color */
+  --color-primary: #3b82f6;                    /* Base Primary (e.g. Electric Blue) */
+  --color-primary-hover: #2563eb;              /* Hover state */
+  --color-primary-active: #1d4ed8;             /* Active / pressed */
+  --color-primary-foreground: #ffffff;         /* Text on primary buttons */
+  --color-primary-subtle: #eff6ff;             /* Light tint for active tabs/chips */
+  --color-primary-subtle-foreground: #1d4ed8;  /* Text on light tint */
+  --color-primary-border: #93c5fd;             /* Subtle borders / focus rings */
+  
+  /* Brand Gradient (Used in hero banners, primary buttons & logos) */
+  --color-primary-gradient-from: #1e3a8a;
+  --color-primary-gradient-via: #2563eb;
+  --color-primary-gradient-to: #60a5fa;
+  --color-primary-rgb: 59, 130, 246;           /* RGB triplet for glow effects */
+}
 ```
+
+Updating these variables automatically updates:
+- ✅ **Primary Buttons & Hover Shadows** (`.brand-gradient`, `bg-primary`, `--shadow-brand`)
+- ✅ **Sidebar Active States & Indicators** (`bg-primary-subtle`, `text-primary-subtle-foreground`, `bg-primary`)
+- ✅ **Input & Control Focus Rings** (`focus:ring-primary`, `border-primary`)
+- ✅ **Interactive Switches & Badges** (`bg-primary`, `bg-primary-subtle`)
+- ✅ **Ambient Background Wash** (Floating radial gradient wash in `body::before`)
+- ✅ **Auth Aside Banners & Links** (`text-primary`, `.brand-gradient`)
+
+### 3. Available Semantic Design Tokens
+
+Use these semantic classes throughout your custom pages and components:
+
+| Semantic Token | Tailwind Utility Classes | Intended Purpose |
+|---|---|---|
+| **Primary** | `bg-primary`, `text-primary`, `border-primary` | Main brand action, key focal points, active state indicators |
+| **Primary Foreground** | `text-primary-foreground` | High-contrast text on top of primary background |
+| **Primary Subtle** | `bg-primary-subtle`, `text-primary-subtle-foreground` | Active navigation items, soft badges, selected rows |
+| **Background / Foreground** | `bg-background`, `text-foreground` | Main page canvas and primary reading text |
+| **Card / Card Foreground** | `bg-card`, `text-card-foreground` | Surface cards, floating dialogs, modals, popovers |
+| **Muted / Muted Foreground**| `text-muted-foreground`, `bg-surface-2` | Secondary labels, descriptions, metadata timestamps |
+| **Border / Line** | `border-border`, `border-line` | Structural hairline card and table borders |
+| **Destructive / Danger** | `bg-destructive`, `text-destructive` | Destructive actions, negative deltas, error messages |
+| **Success** | `bg-success`, `text-success` | Positive growth deltas, completed statuses, verified badges |
+| **Warning** | `bg-warning`, `text-warning` | Cautionary warnings, pending items |
+| **Info** | `bg-info`, `text-info` | Informational callouts and highlights |
+
+### 4. Dark Mode Support
+
+Dark mode tokens are built-in in [`src/index.css`](file:///d:/Suretek-Builds/react-starter-ts/src/index.css) via `.dark` / `[data-theme="dark"]`. When activated, surfaces smoothly transition to deep charcoal/slate tones while maintaining contrast across cards, text, borders, and primary brand accents.
+
 
 ---
 

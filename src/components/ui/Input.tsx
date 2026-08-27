@@ -7,7 +7,7 @@ import type {
 import { cn } from "../../lib/utils";
 import Icon from "./Icon";
 
-const labelCls = "block text-xs font-medium tracking-tight text-muted";
+const labelCls = "block text-xs font-medium tracking-tight text-muted-foreground";
 
 interface BaseFieldProps {
   label?: string;
@@ -37,12 +37,12 @@ export const Input: React.FC<InputProps> = ({
       id={id}
       className={cn(
         "input-base rounded-full",
-        error && "border-priority-urgent!",
+        error && "border-destructive!",
         className
       )}
       {...props}
     />
-    {error && <p className="text-xs text-priority-urgent">{error}</p>}
+    {error && <p className="text-xs text-destructive">{error}</p>}
   </div>
 );
 
@@ -69,12 +69,12 @@ export const Textarea: React.FC<TextareaProps> = ({
       rows={rows}
       className={cn(
         "input-base resize-none rounded-2xl",
-        error && "border-priority-urgent!",
+        error && "border-destructive!",
         className
       )}
       {...props}
     />
-    {error && <p className="text-xs text-priority-urgent">{error}</p>}
+    {error && <p className="text-xs text-destructive">{error}</p>}
   </div>
 );
 
@@ -129,7 +129,7 @@ export const FilterSelect: React.FC<FilterSelectProps> = ({
   <div className="relative">
     <select
       className={cn(
-        "h-9 cursor-pointer appearance-none rounded-full border border-line bg-surface pl-4 pr-9 text-xs font-medium text-ink shadow-(--shadow-card) outline-none transition-all duration-200 hover:border-brand-300 focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/15",
+        "h-9 cursor-pointer appearance-none rounded-full border border-border bg-card pl-4 pr-9 text-xs font-medium text-foreground shadow-(--shadow-card) outline-none transition-all duration-200 hover:border-primary-border focus:border-primary/50 focus:ring-2 focus:ring-primary/15",
         className
       )}
       {...props}

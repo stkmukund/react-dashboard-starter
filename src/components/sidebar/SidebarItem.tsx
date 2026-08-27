@@ -40,14 +40,14 @@ export default function SidebarItem({
                 : "gap-3 px-3",
 
             isActive
-                ? "bg-brand-50 text-brand-700 font-medium"
-                : "text-muted hover:bg-surface-2"
+                ? "bg-primary-subtle text-primary-subtle-foreground font-medium"
+                : "text-muted-foreground hover:bg-surface-2 hover:text-foreground"
         );
 
     const renderContent = (isActive: boolean) => (
         <>
             {isActive && !collapsed && (
-                <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-brand-500" />
+                <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-primary" />
             )}
 
             <Icon
@@ -62,7 +62,7 @@ export default function SidebarItem({
                     </span>
 
                     {item.badge !== undefined && (
-                        <span className="rounded-full bg-ink px-2 py-0.5 text-[10px] text-white">
+                        <span className="rounded-full bg-foreground px-2 py-0.5 text-[10px] text-background">
                             {item.badge}
                         </span>
                     )}

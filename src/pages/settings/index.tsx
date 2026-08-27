@@ -23,7 +23,7 @@ const Switch = ({ checked, onChange, id, "aria-label": ariaLabel }: SwitchProps)
         onClick={() => onChange(!checked)}
         className={cn(
             "relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus-ring",
-            checked ? "bg-brand-500" : "bg-elevated"
+            checked ? "bg-primary" : "bg-elevated"
         )}
     >
         <span
@@ -43,8 +43,8 @@ interface SettingsCardProps {
 
 const SettingsCard = ({ title, description, children }: SettingsCardProps) => (
     <section className="card rounded-3xl p-6 shadow-(--shadow-card)">
-        <h3 className="font-display text-sm font-semibold tracking-tight text-ink">{title}</h3>
-        {description && <p className="mt-1 text-xs text-muted">{description}</p>}
+        <h3 className="font-display text-sm font-semibold tracking-tight text-foreground">{title}</h3>
+        {description && <p className="mt-1 text-xs text-muted-foreground">{description}</p>}
         <div className="mt-5">{children}</div>
     </section>
 );
@@ -60,12 +60,12 @@ const Metric = ({ icon, label, value, tint }: MetricProps) => (
     <div className="rounded-2xl bg-surface-2/60 p-4">
         <div
             className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl"
-            style={{ backgroundColor: `${tint}1a`, color: tint }}
+            style={{ backgroundColor: `color-mix(in srgb, ${tint} 12%, transparent)`, color: tint }}
         >
             <Icon name={icon} size={18} />
         </div>
-        <p className="font-display text-2xl font-semibold tracking-tight tabular text-ink">{value}</p>
-        <p className="mt-0.5 text-xs text-muted">{label}</p>
+        <p className="font-display text-2xl font-semibold tracking-tight tabular text-foreground">{value}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">{label}</p>
     </div>
 );
 
@@ -108,10 +108,10 @@ export default function SettingsPage() {
                             className="h-16 w-16 text-lg"
                         />
                         <div className="min-w-0">
-                            <p className="font-display text-lg font-semibold tracking-tight text-ink">
+                            <p className="font-display text-lg font-semibold tracking-tight text-foreground">
                                 {user?.name || "Anonymous"}
                             </p>
-                            <p className="truncate text-sm text-muted">{user?.email || "No email provided"}</p>
+                            <p className="truncate text-sm text-muted-foreground">{user?.email || "No email provided"}</p>
                         </div>
                     </div>
                 </SettingsCard>
@@ -119,9 +119,9 @@ export default function SettingsPage() {
                 {/* Workspace */}
                 <SettingsCard title="Workspace" description="Your activity at a glance.">
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                        <Metric icon="dashboard" label="Boards" value="12" tint="#2f8159" />
-                        <Metric icon="task_alt" label="Tasks" value="48" tint="#0ea5e9" />
-                        <Metric icon="group" label="People" value="6" tint="#10b981" />
+                        <Metric icon="dashboard" label="Boards" value="12" tint="var(--color-primary)" />
+                        <Metric icon="task_alt" label="Tasks" value="48" tint="var(--color-info)" />
+                        <Metric icon="group" label="People" value="6" tint="var(--color-success)" />
                     </div>
                 </SettingsCard>
 
@@ -129,8 +129,8 @@ export default function SettingsPage() {
                 <SettingsCard title="Preferences" description="Saved to this browser.">
                     <div className="flex items-center justify-between gap-4">
                         <div>
-                            <p className="text-sm font-medium text-ink">Reduce motion</p>
-                            <p className="mt-0.5 text-xs text-muted">
+                            <p className="text-sm font-medium text-foreground">Reduce motion</p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                                 Minimize animations and transitions across the app.
                             </p>
                         </div>
@@ -142,12 +142,12 @@ export default function SettingsPage() {
                     </div>
                     <div className="mt-5 flex items-center justify-between gap-4 border-t pt-5">
                         <div>
-                            <p className="text-sm font-medium text-ink">Command menu</p>
-                            <p className="mt-0.5 text-xs text-muted">
+                            <p className="text-sm font-medium text-foreground">Command menu</p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                                 Jump anywhere, search pages, or trigger quick actions.
                             </p>
                         </div>
-                        <kbd className="flex items-center gap-0.5 rounded-md bg-surface-2 px-2 py-1 text-[11px] font-semibold text-muted">
+                        <kbd className="flex items-center gap-0.5 rounded-md bg-surface-2 px-2 py-1 text-[11px] font-semibold text-muted-foreground">
                             <span className="text-xs">⌘</span>K
                         </kbd>
                     </div>
@@ -165,9 +165,9 @@ export default function SettingsPage() {
                             />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-ink">{appConfig.name}</p>
-                            <p className="text-xs text-muted">
-                                {appConfig.tagline} · Light theme
+                            <p className="text-sm font-semibold text-foreground">{appConfig.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {appConfig.tagline}
                             </p>
                         </div>
                     </div>

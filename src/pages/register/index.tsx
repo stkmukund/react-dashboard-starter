@@ -129,11 +129,11 @@ const RegisterPage: React.FC = () => {
                         </form>
                     </div>
 
-                    <p className="mt-5 text-center text-sm text-muted">
+                    <p className="mt-5 text-center text-sm text-muted-foreground">
                         Already have an account?{" "}
                         <Link
                             to="/login"
-                            className="font-semibold text-brand-600 hover:text-brand-500"
+                            className="font-semibold text-primary hover:text-primary-hover"
                         >
                             Log in
                         </Link>

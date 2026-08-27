@@ -71,12 +71,12 @@ export default function TopbarUserMenu({
                 onClick={() => setOpen((value) => !value)}
                 aria-expanded={open}
                 aria-haspopup="menu"
-                className="flex items-center gap-2 rounded-full border border-line bg-surface py-1 pl-1 pr-2.5 shadow-(--shadow-card) transition-all duration-200 hover:border-brand-300 hover:shadow-(--shadow-soft)"
+                className="flex items-center gap-2 rounded-full border border-border bg-card py-1 pl-1 pr-2.5 shadow-(--shadow-card) transition-all duration-200 hover:border-primary-border hover:shadow-(--shadow-soft)"
             >
                 {avatar}
 
                 <span
-                    className="hidden max-w-28 truncate text-sm font-medium text-ink lg:block"
+                    className="hidden max-w-28 truncate text-sm font-medium text-foreground lg:block"
                 >
                     {firstName}
                 </span>
@@ -124,7 +124,7 @@ function UserInfo({ user }: UserInfoProps) {
     return (
         <div className="px-3 py-2">
             {user.name && (
-                <p className="truncate text-sm font-semibold text-ink">
+                <p className="truncate text-sm font-semibold text-foreground">
                     {user.name}
                 </p>
             )}
@@ -161,8 +161,8 @@ function UserMenuItem({
                 "rounded-xl px-3 py-2",
                 "text-sm transition-colors",
                 item.danger
-                    ? "text-priority-urgent hover:bg-surface-2"
-                    : "text-ink hover:bg-surface-2",
+                    ? "text-destructive hover:bg-surface-2"
+                    : "text-foreground hover:bg-surface-2",
                 item.disabled &&
                 "cursor-not-allowed opacity-50",
             )}

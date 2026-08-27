@@ -187,12 +187,12 @@ const DecorativeDoodles: React.FC = () => (
 /* ─── Background variants ──────────────────────────────────────────────────── */
 
 const BG_VARIANTS: Record<NonNullable<AuthAsideProps["variant"]>, string> = {
-    // Flowboard Forest brand gradient
-    energetic: "bg-gradient-to-br from-[#10291d] via-[#1c4430] to-[#246646]",
+    // Dynamic brand gradient from theme
+    energetic: "brand-gradient",
     // Soft slate Navy
-    calm: "bg-gradient-to-br from-slate-950 via-[#10291d] to-slate-900",
-    // Deep emerald mesh
-    mesh: "bg-gradient-to-br from-[#0c2419] via-[#1c4430] to-[#0f172a]",
+    calm: "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950",
+    // Deep primary mesh
+    mesh: "bg-gradient-to-br from-slate-950 via-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)]",
 };
 
 /* ─── Main Component ───────────────────────────────────────────────────────── */
@@ -271,10 +271,10 @@ const AuthAside: React.FC<AuthAsideProps> = ({
                         initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.6, delay: 0.6 }}
-                        className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-emerald-400/30 bg-emerald-950/60 px-5 py-2 text-xs font-bold text-white shadow-inner backdrop-blur-md"
+                        className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-black/25 px-5 py-2 text-xs font-bold text-white shadow-inner backdrop-blur-md"
                     >
                         {badgeIcon && (
-                            <Icon name={badgeIcon} size={16} className="text-yellow-300" filled />
+                            <Icon name={badgeIcon} size={16} className="text-amber-300" filled />
                         )}
                         <span>{badgeText}</span>
                     </motion.div>
@@ -293,7 +293,7 @@ const AuthAside: React.FC<AuthAsideProps> = ({
                     initial={prefersReducedMotion ? undefined : { opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.9 }}
-                    className="mt-3.5 text-sm xl:text-base leading-relaxed text-emerald-100/85 font-normal"
+                    className="mt-3.5 text-sm xl:text-base leading-relaxed text-white/85 font-normal"
                 >
                     {subtitle}
                 </motion.p>
