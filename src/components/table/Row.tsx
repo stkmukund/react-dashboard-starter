@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import type { TableCell } from "./types";
 import StatusBadge from "./StatusBadge";
-import { getInitials } from "../../lib/utils";
+import { initials as getInitials } from "../../lib/utils";
 
 interface RowProps {
   cells: TableCell[];
@@ -28,9 +28,8 @@ export const Row: React.FC<RowProps> = ({
   return (
     <tr
       onClick={handleRowClick}
-      className={`border-b border-border/60 bg-card transition-colors duration-150 ${
-        isRowClickable ? "cursor-pointer hover:bg-surface-2/60" : "hover:bg-surface-2/40"
-      } ${className}`}
+      className={`border-b border-border/60 bg-card transition-colors duration-150 ${isRowClickable ? "cursor-pointer hover:bg-surface-2/60" : "hover:bg-surface-2/40"
+        } ${className}`}
     >
       {cells.map((cell, index) => {
         // Custom cell renderer has priority
@@ -38,13 +37,12 @@ export const Row: React.FC<RowProps> = ({
           return (
             <td
               key={index}
-              className={`px-5 py-3.5 text-sm text-foreground align-middle ${
-                cell.align === "center"
-                  ? "text-center"
-                  : cell.align === "right"
+              className={`px-5 py-3.5 text-sm text-foreground align-middle ${cell.align === "center"
+                ? "text-center"
+                : cell.align === "right"
                   ? "text-right"
                   : "text-left"
-              } ${cell.className || ""}`}
+                } ${cell.className || ""}`}
             >
               {cell.custom}
             </td>
@@ -57,28 +55,26 @@ export const Row: React.FC<RowProps> = ({
           typeof cell.avatar?.initials === "string"
             ? cell.avatar.initials
             : cell.avatar?.initials && titleText
-            ? getInitials(titleText)
-            : null;
+              ? getInitials(titleText)
+              : null;
 
         return (
           <td
             key={index}
-            className={`px-5 py-3.5 text-sm text-foreground align-middle ${
-              cell.align === "center"
-                ? "text-center"
-                : cell.align === "right"
+            className={`px-5 py-3.5 text-sm text-foreground align-middle ${cell.align === "center"
+              ? "text-center"
+              : cell.align === "right"
                 ? "text-right"
                 : "text-left"
-            } ${cell.className || ""}`}
+              } ${cell.className || ""}`}
           >
             <div
-              className={`flex items-center gap-3 ${
-                cell.align === "center"
-                  ? "justify-center"
-                  : cell.align === "right"
+              className={`flex items-center gap-3 ${cell.align === "center"
+                ? "justify-center"
+                : cell.align === "right"
                   ? "justify-end"
                   : "justify-start"
-              }`}
+                }`}
             >
               {/* Avatar image */}
               {cell.avatar?.url && (
@@ -109,9 +105,8 @@ export const Row: React.FC<RowProps> = ({
                               cell.title.onClick(e);
                             }
                           }}
-                          className={`font-medium text-foreground hover:text-primary transition-colors truncate block ${
-                            cell.title.className || ""
-                          }`}
+                          className={`font-medium text-foreground hover:text-primary transition-colors truncate block ${cell.title.className || ""
+                            }`}
                           title={cell.title.tilevalue || titleText}
                         >
                           {cell.title.value}
@@ -119,9 +114,8 @@ export const Row: React.FC<RowProps> = ({
                       ) : (
                         <span
                           onClick={cell.title.onClick}
-                          className={`font-medium text-foreground truncate block ${
-                            cell.title.onClick ? "cursor-pointer hover:text-primary" : ""
-                          } ${cell.title.className || ""}`}
+                          className={`font-medium text-foreground truncate block ${cell.title.onClick ? "cursor-pointer hover:text-primary" : ""
+                            } ${cell.title.className || ""}`}
                           title={cell.title.tilevalue || titleText}
                         >
                           {cell.title.value}
@@ -140,18 +134,16 @@ export const Row: React.FC<RowProps> = ({
                               cell.desc.onClick(e);
                             }
                           }}
-                          className={`text-xs text-muted-foreground hover:text-foreground transition-colors truncate block ${
-                            cell.desc.className || ""
-                          }`}
+                          className={`text-xs text-muted-foreground hover:text-foreground transition-colors truncate block ${cell.desc.className || ""
+                            }`}
                         >
                           {cell.desc.value}
                         </Link>
                       ) : (
                         <div
                           onClick={cell.desc.onClick}
-                          className={`text-xs text-muted-foreground truncate ${
-                            cell.desc.onClick ? "cursor-pointer hover:text-foreground" : ""
-                          } ${cell.desc.className || ""}`}
+                          className={`text-xs text-muted-foreground truncate ${cell.desc.onClick ? "cursor-pointer hover:text-foreground" : ""
+                            } ${cell.desc.className || ""}`}
                         >
                           {cell.desc.value}
                         </div>
