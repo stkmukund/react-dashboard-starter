@@ -254,10 +254,10 @@ export default function Report() {
     };
 
     // Extract unique states for filter dropdown
-    const uniqueStates = useMemo(() => {
-        const states = Array.from(new Set(MOCK_LOAN_DATA.map((item) => item.state))).sort();
-        return states.map((state) => ({ label: state, value: state }));
-    }, []);
+    // const uniqueStates = useMemo(() => {
+    //     const states = Array.from(new Set(MOCK_LOAN_DATA.map((item) => item.state))).sort();
+    //     return states.map((state) => ({ label: state, value: state }));
+    // }, []);
 
     // Filter & Sort Logic
     const filteredAndSortedData = useMemo(() => {
@@ -498,33 +498,33 @@ export default function Report() {
                 }}
                 searchPlaceholder="Search by name, email, phone, city, state, refcode..."
                 filters={[
-                    {
-                        id: "state",
-                        label: "State",
-                        value: selectedState,
-                        onChange: (val) => {
-                            setSelectedState(val);
-                            setCurrentPage(1);
-                        },
-                        options: uniqueStates,
-                    },
-                    {
-                        id: "status",
-                        label: "Status",
-                        value: selectedStatus,
-                        onChange: (val) => {
-                            setSelectedStatus(val);
-                            setCurrentPage(1);
-                        },
-                        options: [
-                            { label: "Approved", value: "APPROVED" },
-                            { label: "Pending", value: "PENDING" },
-                            { label: "Processing", value: "PROCESSING" },
-                            { label: "Completed", value: "COMPLETED" },
-                            { label: "Warning", value: "WARNING" },
-                            { label: "Failed", value: "FAILED" },
-                        ],
-                    },
+                    // {
+                    //     id: "state",
+                    //     label: "State",
+                    //     value: selectedState,
+                    //     onChange: (val) => {
+                    //         setSelectedState(val);
+                    //         setCurrentPage(1);
+                    //     },
+                    //     options: uniqueStates,
+                    // },
+                    // {
+                    //     id: "status",
+                    //     label: "Status",
+                    //     value: selectedStatus,
+                    //     onChange: (val) => {
+                    //         setSelectedStatus(val);
+                    //         setCurrentPage(1);
+                    //     },
+                    //     options: [
+                    //         { label: "Approved", value: "APPROVED" },
+                    //         { label: "Pending", value: "PENDING" },
+                    //         { label: "Processing", value: "PROCESSING" },
+                    //         { label: "Completed", value: "COMPLETED" },
+                    //         { label: "Warning", value: "WARNING" },
+                    //         { label: "Failed", value: "FAILED" },
+                    //     ],
+                    // },
                 ]}
                 dateRange={{
                     selected: dateRange,
@@ -532,7 +532,7 @@ export default function Report() {
                         setDateRange(range);
                         setCurrentPage(1);
                     },
-                    defaultPreset: "all_time",
+                    defaultPreset: "today",
                     showCustom: true,
                 }}
                 onReset={() => {

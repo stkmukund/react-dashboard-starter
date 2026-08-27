@@ -491,7 +491,7 @@ export default function TableDemoPage() {
             setDateRange(range);
             setCurrentPage(1);
           },
-          defaultPreset: "all_time",
+          defaultPreset: "today",
           showCustom: true,
         }}
         onReset={() => {

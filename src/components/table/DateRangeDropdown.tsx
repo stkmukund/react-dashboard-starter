@@ -98,11 +98,11 @@ export const calculateDateRange = (
       break;
     }
 
-    case "all_time": {
-      start = new Date(2020, 0, 1);
-      label = "All Time";
-      break;
-    }
+    // case "all_time": {
+    //   start = new Date(2020, 0, 1);
+    //   label = "All Time";
+    //   break;
+    // }
 
     case "custom": {
       if (customStart && customEnd) {
@@ -135,7 +135,7 @@ const PRESET_OPTIONS: { label: string; value: DateRangePreset }[] = [
   { label: "Last Month", value: "last_month" },
   { label: "Last 3 Months", value: "last_3_months" },
   { label: "This Year", value: "this_year" },
-  { label: "All Time", value: "all_time" },
+  // { label: "All Time", value: "all_time" },
   { label: "Custom Range", value: "custom" },
 ];
 
