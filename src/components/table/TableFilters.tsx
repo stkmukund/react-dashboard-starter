@@ -57,10 +57,10 @@ export const TableFilters: React.FC<TableFiltersProps> = ({
       <div className="flex flex-1 flex-wrap items-center gap-2.5">
         {/* Search Bar Input */}
         {(onSearchChange || onSearchSubmit) && (
-          <div className="relative flex-1 min-w-[220px] max-w-md">
+          <div className="relative flex-1 min-w-55 max-w-md">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
               {searchLoading ? (
-                <Spinner size="xs" />
+                <Spinner size="sm" />
               ) : (
                 <Icon name="search" size={18} />
               )}
@@ -89,7 +89,7 @@ export const TableFilters: React.FC<TableFiltersProps> = ({
 
         {/* Custom Dropdown Filters */}
         {filters.map((filter) => (
-          <div key={filter.id} className="relative min-w-[130px]">
+          <div key={filter.id} className="relative min-w-32.5">
             <select
               value={filter.value ?? ""}
               onChange={(e) => filter.onChange(e.target.value)}

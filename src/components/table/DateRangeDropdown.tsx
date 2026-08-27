@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, useImperativeHandle, forwardRef } from "react";
-import type { DateRange, DateRangePreset } from "./types";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Icon } from "../ui";
+import type { DateRange, DateRangePreset } from "./types";
 
 export interface DateRangeDropdownProps {
   onDateRangeChange: (dateRange: DateRange) => void;
@@ -236,7 +236,7 @@ export const DateRangeDropdown = forwardRef<DateRangeDropdownRef, DateRangeDropd
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center justify-between gap-2.5 px-3.5 py-2 bg-card border border-border rounded-xl text-sm font-medium text-foreground hover:bg-surface-2 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-(--shadow-card) transition-all min-w-[160px]"
+          className="inline-flex items-center justify-between gap-2.5 px-3.5 py-2 bg-card border border-border rounded-xl text-sm font-medium text-foreground hover:bg-surface-2 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-(--shadow-card) transition-all min-w-40"
           aria-expanded={isOpen}
           aria-haspopup="true"
         >
@@ -249,17 +249,15 @@ export const DateRangeDropdown = forwardRef<DateRangeDropdownRef, DateRangeDropd
           <Icon
             name="keyboard_arrow_down"
             size={16}
-            className={`text-muted-foreground transition-transform duration-200 shrink-0 ${
-              isOpen ? "rotate-180" : ""
-            }`}
+            className={`text-muted-foreground transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""
+              }`}
           />
         </button>
 
         {isOpen && (
           <div
-            className={`absolute mt-2 w-72 bg-card rounded-2xl shadow-(--shadow-lift) border border-border z-50 animate-in overflow-hidden ${
-              align === "right" ? "right-0" : "left-0"
-            }`}
+            className={`absolute mt-2 w-72 bg-card rounded-2xl shadow-(--shadow-lift) border border-border z-50 animate-in overflow-hidden ${align === "right" ? "right-0" : "left-0"
+              }`}
           >
             {!showCustomPicker ? (
               <>
@@ -282,11 +280,10 @@ export const DateRangeDropdown = forwardRef<DateRangeDropdownRef, DateRangeDropd
                         key={opt.value}
                         type="button"
                         onClick={() => handlePresetSelect(opt.value)}
-                        className={`w-full flex items-center justify-between px-4 py-2 text-xs font-medium transition-colors ${
-                          isSelected
-                            ? "bg-primary/10 text-primary font-semibold"
-                            : "text-foreground hover:bg-surface-2"
-                        }`}
+                        className={`w-full flex items-center justify-between px-4 py-2 text-xs font-medium transition-colors ${isSelected
+                          ? "bg-primary/10 text-primary font-semibold"
+                          : "text-foreground hover:bg-surface-2"
+                          }`}
                       >
                         <span>{opt.label}</span>
                         {isSelected && <Icon name="check" size={14} className="text-primary" />}
