@@ -138,15 +138,17 @@ const LoginPage = () => {
             </form>
           </div>
 
-          <p className="mt-4 text-center text-xs sm:text-sm text-muted-foreground">
-            New here?{" "}
-            <Link
-              to="/register"
-              className="font-semibold text-primary hover:text-primary-hover"
-            >
-              Create an account
-            </Link>
-          </p>
+          {(searchParams.get("register") !== null || searchParams.get("signup") !== null || searchParams.get("demo") !== null) && (
+            <p className="mt-4 text-center text-xs sm:text-sm text-muted-foreground animate-in">
+              New here?{" "}
+              <Link
+                to="/register"
+                className="font-semibold text-primary hover:text-primary-hover"
+              >
+                Create an account
+              </Link>
+            </p>
+          )}
         </div>
       </div>
 
