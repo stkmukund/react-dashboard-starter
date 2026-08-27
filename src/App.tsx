@@ -45,6 +45,7 @@ function App() {
           >
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/demo" element={<TableDemoPage />} />
+            <Route path="/report" element={<Report />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
 
