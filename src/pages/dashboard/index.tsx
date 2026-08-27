@@ -17,10 +17,10 @@ interface KpiData {
 
 const BRAND_OPTIONS = [
     { label: "Riverlend", value: "riverlend" },
-    { label: "Rapid Trust Capital", value: "rapid_trust_capital" },
-    { label: "Ridge View Loans", value: "ridge_view_loans" },
-    { label: "Universal Lending LLC", value: "universal_lending_llc" },
-    { label: "Bright Relief", value: "bright_relief" },
+    { label: "Rapid Trust Capital", value: "rapidtrust" },
+    { label: "Ridge View Loans", value: "ridgeviewloans" },
+    { label: "Universal Lending LLC", value: "universallending" },
+    { label: "Bright Relief", value: "brightrelief" },
 ];
 
 export default function DashboardPage() {
@@ -382,7 +382,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col gap-3 border-b border-line p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                     <div>
                         <h2 className="font-display text-lg font-bold tracking-tight text-ink">
-                            Recent Submissions ({selectedBrand})
+                            Recent Submissions ({BRAND_OPTIONS.find((brand) => brand.value === selectedBrand)?.label || ""})
                         </h2>
                         <p className="text-xs text-muted">
                             Live applicant loan submissions fetched via API
@@ -419,7 +419,7 @@ export default function DashboardPage() {
                                     ? `${firstName} ${lastName}`.trim()
                                     : String(payload.name || row.name || "Applicant");
                                 const initials = name.slice(0, 2).toUpperCase();
-                                
+
                                 const rawAmount = payload.loan_amount || row.loan_amount || 0;
                                 const amount = typeof rawAmount === "number"
                                     ? `$${rawAmount.toLocaleString()}`
