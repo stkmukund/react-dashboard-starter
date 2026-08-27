@@ -14,20 +14,32 @@ export interface GetValuesParams {
 
 export interface ApiLoanPayload {
   first_name?: string;
+  firstName?: string;
   last_name?: string;
+  lastName?: string;
   name?: string;
   email?: string;
   phone?: string;
   cell?: string;
+  phoneMobile?: string;
   address?: string;
   city?: string;
   state?: string;
   zipcode?: string;
+  zip?: string;
   refcode?: string;
   loan_amount?: string | number;
+  loanAmount?: string | number;
+  requestedAmount?: string | number;
+  clientEstimatedDebt?: string | number;
   dob?: string;
   ssn?: string;
   status?: string;
+  source?: string;
+  alt_source?: string;
+  leadOrigin?: string;
+  language?: string;
+  hasTcpaConsent?: boolean;
   [key: string]: unknown;
 }
 
@@ -38,19 +50,24 @@ export interface ApiLoanRecord {
   updated_at?: string;
   payload?: ApiLoanPayload;
   first_name?: string;
+  firstName?: string;
   last_name?: string;
+  lastName?: string;
   name?: string;
   email?: string;
   phone?: string;
   cell?: string;
+  phoneMobile?: string;
   address?: string;
   city?: string;
   state?: string;
   zipcode?: string;
+  zip?: string;
   refcode?: string;
   brand?: string;
   site_name?: string;
   loan_amount?: string | number;
+  loanAmount?: string | number;
   status?: string;
   date?: string;
   [key: string]: unknown;

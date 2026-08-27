@@ -46,24 +46,26 @@ const BRAND_NAME_MAP: Record<string, string> = {
 // Normalize backend API loan record into LoanReportItem
 function normalizeApiRecord(raw: ApiLoanRecord, index: number, currentBrand: string): LoanReportItem {
     const payload = raw.payload || {};
-    const rawName = (payload.name || raw.name || "").trim();
-    let firstName = payload.first_name || raw.first_name || "";
-    let lastName = payload.last_name || raw.last_name || "";
+    const rawName = String(payload.name || raw.name || "").trim();
+    let firstName = String(payload.first_name || payload.firstName || raw.first_name || raw.firstName || "");
+    let lastName = String(payload.last_name || payload.lastName || raw.last_name || raw.lastName || "");
     if (!firstName && rawName) {
         const parts = rawName.split(" ");
         firstName = parts[0] || "Applicant";
         lastName = parts.slice(1).join(" ") || "";
     }
 
-    const email = payload.email || raw.email || "—";
-    const phone = payload.phone || payload.cell || raw.phone || raw.cell || "—";
-    const address = payload.address || raw.address || "—";
-    const city = payload.city || raw.city || "—";
-    const state = payload.state || raw.state || "—";
-    const zipcode = payload.zipcode || raw.zipcode || "—";
-    const refcode = payload.refcode || raw.refcode || `REF${raw.lead_id || index + 100}`;
-    const loanAmount = payload.loan_amount || raw.loan_amount || "0";
-    const date = raw.created_at?.split(" ")[0] || raw.date || "2026-08-27";
+    const email = String(payload.email || raw.email || "—");
+    const phone = String(payload.phone || payload.phoneMobile || payload.cell || raw.phone || raw.cell || "—");
+    const address = String(payload.address || raw.address || "—");
+    const city = String(payload.city || raw.city || "—");
+    const state = String(payload.state || raw.state || "—");
+    const zipcode = String(payload.zipcode || payload.zip || raw.zipcode || raw.zip || "—");
+    const refcode = String(payload.refcode || raw.refcode || (raw.lead_id ? `REF${raw.lead_id}` : `REC-${1000 + index}`));
+    const rawLoanAmount = payload.loan_amount || payload.loanAmount || payload.requestedAmount || payload.clientEstimatedDebt || raw.loan_amount || raw.loanAmount || "0";
+    const loanAmount = typeof rawLoanAmount === "number" ? rawLoanAmount : String(rawLoanAmount || "0");
+    const brand = String(raw.brand || raw.site_name || payload.alt_source || payload.leadOrigin || currentBrand);
+    const date = String(raw.created_at?.split(" ")[0] || raw.date || "2026-08-27");
 
     return {
         id: String(raw.id || raw.lead_id || `REC-${1000 + index}`),
@@ -76,7 +78,7 @@ function normalizeApiRecord(raw: ApiLoanRecord, index: number, currentBrand: str
         state,
         zipcode,
         refcode,
-        brand: raw.brand || raw.site_name || currentBrand,
+        brand,
         loan_amount: loanAmount,
         date,
     };
@@ -316,80 +318,86 @@ export default function Report() {
 
     // Transform into TableCells
     const tableRows: TableCell[][] = useMemo(() => {
-        return paginatedData.map((item) => [
-            // Col 1: Applicant Name + Ref Code
-            {
-                avatar: { initials: `${item.first_name[0]}${item.last_name[0]}` },
-                title: {
-                    value: `${item.first_name} ${item.last_name}`,
-                    className: "font-semibold text-foreground hover:text-primary transition-colors cursor-pointer",
-                    onClick: () => setSelectedRecord(item),
+        return paginatedData.map((item) => {
+            const firstInit = item.first_name?.[0] || "A";
+            const lastInit = item.last_name?.[0] || "";
+            const initials = `${firstInit}${lastInit}`.toUpperCase();
+
+            return [
+                // Col 1: Applicant Name + Ref Code
+                {
+                    avatar: { initials },
+                    title: {
+                        value: `${item.first_name} ${item.last_name}`.trim(),
+                        className: "font-semibold text-foreground hover:text-primary transition-colors cursor-pointer",
+                        onClick: () => setSelectedRecord(item),
+                    },
+                    desc: {
+                        value: item.brand
+                            ? `${item.refcode} • ${BRAND_NAME_MAP[item.brand] || item.brand}`
+                            : item.refcode,
+                        className: "font-mono text-xs font-medium text-primary",
+                    },
                 },
-                desc: {
-                    value: item.brand
-                        ? `${item.refcode} • ${BRAND_NAME_MAP[item.brand] || item.brand}`
-                        : item.refcode,
-                    className: "font-mono text-xs font-medium text-primary",
+                // Col 2: Contact Info (Email & Phone)
+                {
+                    title: {
+                        value: item.email,
+                        className: "text-foreground font-medium",
+                    },
+                    desc: {
+                        value: formatPhoneNumber(item.phone),
+                        className: "text-xs font-mono text-muted-foreground",
+                    },
                 },
-            },
-            // Col 2: Contact Info (Email & Phone)
-            {
-                title: {
-                    value: item.email,
-                    className: "text-foreground font-medium",
+                // Col 3: Address & Location (Address, City, State, Zipcode)
+                {
+                    title: {
+                        value: item.address,
+                        className: "font-medium text-foreground",
+                    },
+                    desc: {
+                        value: `${item.city}, ${item.state} ${item.zipcode}`,
+                        className: "text-xs text-muted-foreground",
+                    },
                 },
-                desc: {
-                    value: formatPhoneNumber(item.phone),
-                    className: "text-xs font-mono text-muted-foreground",
+                // Col 4: Loan Amount & Date
+                {
+                    align: "right",
+                    title: {
+                        value: formatCurrency(item.loan_amount),
+                        className: "font-bold font-mono text-foreground text-sm",
+                    },
+                    desc: {
+                        value: item.date || "—",
+                        className: "text-xs",
+                    },
                 },
-            },
-            // Col 3: Address & Location (Address, City, State, Zipcode)
-            {
-                title: {
-                    value: item.address,
-                    className: "font-medium text-foreground",
+                // Col 5: Actions
+                {
+                    align: "right",
+                    action: (
+                        <div className="flex items-center justify-end gap-1">
+                            <button
+                                type="button"
+                                onClick={() => setSelectedRecord(item)}
+                                aria-label="View Details"
+                                className="grid size-8 place-items-center rounded-lg hover:bg-surface-2 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <Icon name="visibility" size={16} />
+                            </button>
+                            <button
+                                type="button"
+                                aria-label="More options"
+                                className="grid size-8 place-items-center rounded-lg hover:bg-surface-2 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <Icon name="more_vert" size={16} />
+                            </button>
+                        </div>
+                    ),
                 },
-                desc: {
-                    value: `${item.city}, ${item.state} ${item.zipcode}`,
-                    className: "text-xs text-muted-foreground",
-                },
-            },
-            // Col 4: Loan Amount & Date
-            {
-                align: "right",
-                title: {
-                    value: formatCurrency(item.loan_amount),
-                    className: "font-bold font-mono text-foreground text-sm",
-                },
-                desc: {
-                    value: item.date || "—",
-                    className: "text-xs",
-                },
-            },
-            // Col 5: Actions
-            {
-                align: "right",
-                action: (
-                    <div className="flex items-center justify-end gap-1">
-                        <button
-                            type="button"
-                            onClick={() => setSelectedRecord(item)}
-                            aria-label="View Details"
-                            className="grid size-8 place-items-center rounded-lg hover:bg-surface-2 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            <Icon name="visibility" size={16} />
-                        </button>
-                        <button
-                            type="button"
-                            aria-label="More options"
-                            className="grid size-8 place-items-center rounded-lg hover:bg-surface-2 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            <Icon name="more_vert" size={16} />
-                        </button>
-                    </div>
-                ),
-            },
-        ]);
+            ]
+        });
     }, [paginatedData]);
 
     // Headers definition
@@ -534,8 +542,8 @@ export default function Report() {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-border">
                         <div className="flex items-center gap-3.5">
                             <div className="size-12 rounded-2xl bg-primary/10 text-primary font-bold flex items-center justify-center text-lg">
-                                {selectedRecord.first_name[0]}
-                                {selectedRecord.last_name[0]}
+                                {selectedRecord.first_name?.[0] || "A"}
+                                {selectedRecord.last_name?.[0] || ""}
                             </div>
                             <div>
                                 <div className="flex items-center gap-2">
