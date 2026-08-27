@@ -54,12 +54,7 @@ export default function DashboardPage() {
         } catch (err) {
             console.warn("Dashboard API fetch fallback:", err);
             // Default fallback samples
-            setApiData([
-                { id: "REC-101", first_name: "Eric", last_name: "Clark", email: "test020@gmail.com", loan_amount: 19000, status: "APPROVED", created_at: "2026-08-25" },
-                { id: "REC-102", first_name: "Sarah", last_name: "Jenkins", email: "s.jenkins@outlook.com", loan_amount: 35000, status: "PROCESSING", created_at: "2026-08-26" },
-                { id: "REC-103", first_name: "Michael", last_name: "Rodriguez", email: "m.rodriguez@company.net", loan_amount: 50000, status: "COMPLETED", created_at: "2026-08-20" },
-                { id: "REC-104", first_name: "Emily", last_name: "Watson", email: "emily.watson@gmail.com", loan_amount: 28500, status: "PENDING", created_at: "2026-08-27" },
-            ]);
+            setApiData([]);
         } finally {
             setIsLoading(false);
         }
@@ -129,18 +124,18 @@ export default function DashboardPage() {
             sparklinePoints: "0,20 30,15 55,25 75,10 100,15",
             sparklineArea: "M0,50 L0,20 Q15,35 30,15 T55,25 T75,10 T100,15 L100,50 Z",
         },
-        {
-            title: "Approval Rate",
-            value: `${metrics.approvalRate}%`,
-            change: "+2.5%",
-            isPositive: true,
-            icon: "check_circle",
-            iconBg: "bg-teal-50 text-teal-600 border border-teal-100",
-            iconColor: "text-teal-600",
-            sparklineColor: "#0d9488",
-            sparklinePoints: "0,10 20,30 40,20 70,40 100,25",
-            sparklineArea: "M0,50 L0,10 Q20,30 40,20 T70,40 T100,25 L100,50 Z",
-        },
+        // {
+        //     title: "Approval Rate",
+        //     value: `${metrics.approvalRate}%`,
+        //     change: "+2.5%",
+        //     isPositive: true,
+        //     icon: "check_circle",
+        //     iconBg: "bg-teal-50 text-teal-600 border border-teal-100",
+        //     iconColor: "text-teal-600",
+        //     sparklineColor: "#0d9488",
+        //     sparklinePoints: "0,10 20,30 40,20 70,40 100,25",
+        //     sparklineArea: "M0,50 L0,10 Q20,30 40,20 T70,40 T100,25 L100,50 Z",
+        // },
     ], [metrics]);
 
     return (
@@ -216,7 +211,7 @@ export default function DashboardPage() {
             </header>
 
             {/* KPI Cards Grid */}
-            <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {dynamicKpiCards.map((card, i) => (
                     <div
                         key={i}
