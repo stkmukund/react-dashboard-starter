@@ -87,26 +87,7 @@ export const TableFilters: React.FC<TableFiltersProps> = ({
           </div>
         )}
 
-        {/* Custom Dropdown Filters */}
-        {filters.map((filter) => (
-          <div key={filter.id} className="relative min-w-32.5">
-            <select
-              value={filter.value ?? ""}
-              onChange={(e) => filter.onChange(e.target.value)}
-              className="w-full appearance-none px-3.5 py-2 pr-8 bg-surface-2 border border-border rounded-xl text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
-            >
-              <option value="">{filter.placeholder || `All ${filter.label}`}</option>
-              {filter.options.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-muted-foreground">
-              <Icon name="keyboard_arrow_down" size={16} />
-            </div>
-          </div>
-        ))}
+
 
         {/* Reset / Clear Button */}
         {hasActiveFilters && onReset && (
@@ -123,6 +104,28 @@ export const TableFilters: React.FC<TableFiltersProps> = ({
 
       {/* Right side: Date Range Picker & Custom Actions */}
       <div className="flex items-center gap-2.5 self-end md:self-auto shrink-0">
+
+        {/* Custom Dropdown Filters */}
+        {filters.map((filter) => (
+          <div key={filter.id} className="relative min-w-32.5">
+            <select
+              value={filter.value ?? ""}
+              onChange={(e) => filter.onChange(e.target.value)}
+              className="w-full appearance-none px-3.5 py-2 pr-8 border border-border rounded-xl text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all hover:bg-surface-2 shadow-(--shadow-card)"
+            >
+              {/* <option value="">{filter.placeholder || `All ${filter.label}`}</option> */}
+              {filter.options.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-muted-foreground">
+              <Icon name="keyboard_arrow_down" size={16} />
+            </div>
+          </div>
+        ))}
+
         {dateRange && (
           <DateRangeDropdown
             onDateRangeChange={dateRange.onChange}
