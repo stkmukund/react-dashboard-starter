@@ -146,7 +146,9 @@ const LoginPage = () => {
 
       <AuthAside
         title={`Welcome back to ${appConfig.name}`}
-        subtitle="Log in and pick up right where you and your team left off."
+        subtitle="Sign in securely to manage your applications, insights, and global operations."
+        badgeText="Enterprise-grade security & reliability"
+        badgeIcon="verified_user"
       />
     </div>
   );
