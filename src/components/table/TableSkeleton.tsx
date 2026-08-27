@@ -20,16 +20,14 @@ export const TableSkeleton: React.FC<TableSkeletonProps> = ({
               className="flex-1 flex items-center gap-3"
             >
               {cIdx === 0 && (
-                <Skeleton variant="circular" width="36px" height="36px" />
+                <Skeleton className="h-9 w-9 rounded-full shrink-0" />
               )}
               <div className="space-y-1.5 flex-1">
                 <Skeleton
-                  variant="text"
-                  width={cIdx === 0 ? "70%" : "85%"}
-                  height="14px"
+                  className={`h-3.5 ${cIdx === 0 ? "w-[70%]" : "w-[85%]"}`}
                 />
                 {cIdx === 0 && (
-                  <Skeleton variant="text" width="45%" height="10px" />
+                  <Skeleton className="h-2.5 w-[45%]" />
                 )}
               </div>
             </div>

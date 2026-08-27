@@ -22,6 +22,9 @@ export const endpoints = {
     detail: (id: string | number) => `/users/${id}`,
     profile: "/users/profile",
   },
+  reports: {
+    getValues: "/api/getValues.php",
+  },
 } as const;
 
 export type ApiEndpoints = typeof endpoints;

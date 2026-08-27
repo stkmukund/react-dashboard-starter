@@ -9,6 +9,8 @@
  */
 
 interface EnvConfig {
+  /** Base path / URL where the frontend application is hosted */
+  readonly appBaseUrl: string;
   /** Base URL for backend API requests */
   readonly apiBaseUrl: string;
   /** Timeout for API requests in milliseconds */
@@ -31,10 +33,12 @@ const parseTimeout = (value: unknown, fallback: number): number => {
   return fallback;
 };
 
+const rawAppBaseUrl = import.meta.env.VITE_BASE_PATH || import.meta.env.BASE_URL;
 const rawBaseUrl = import.meta.env.VITE_API_BASE_URL;
 const rawTimeout = import.meta.env.VITE_API_TIMEOUT;
 
 export const env: EnvConfig = {
+  appBaseUrl: (typeof rawAppBaseUrl === "string" && rawAppBaseUrl.trim()) || "/",
   apiBaseUrl: (typeof rawBaseUrl === "string" && rawBaseUrl.trim()) || "http://localhost:3000/api",
   apiTimeout: parseTimeout(rawTimeout, 15000),
   isProduction: import.meta.env.PROD,

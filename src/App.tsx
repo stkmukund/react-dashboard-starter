@@ -10,10 +10,11 @@ import SettingsPage from './pages/settings'
 import TableDemoPage from './pages/demo'
 import { ProtectedRoute, PublicOnlyRoute } from './routes'
 import Report from './pages/report'
+import { env } from './config'
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={env.appBaseUrl}>
       <AuthProvider>
         <Routes>
           {/* Root redirect to /login */}

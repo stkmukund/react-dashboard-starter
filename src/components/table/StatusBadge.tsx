@@ -1,6 +1,6 @@
 import React from "react";
 import type { StatusBadgeConfig, StatusVariant } from "./types";
-import { Icon, Spinner } from "../ui";
+import { Spinner } from "../ui";
 
 interface StatusStyle {
   label: string;
@@ -98,7 +98,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
     <div className={`inline-flex items-center gap-2 ${className}`}>
       {isProcessing && (
         <span className="flex items-center gap-1.5 text-primary">
-          <Spinner size="xs" />
+          <Spinner size="sm" />
           {badge?.percentage !== undefined && (
             <span className="text-xs font-semibold tabular-nums">
               {badge.percentage}%

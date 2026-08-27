@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Button,
     Icon,
@@ -8,6 +8,7 @@ import {
     type TableCell,
     type TableHeader,
 } from "../../components/ui";
+import { reportService, type ApiLoanRecord } from "../../services";
 
 export interface LoanReportItem {
     id: string;
@@ -22,24 +23,24 @@ export interface LoanReportItem {
     refcode: string;
     brand?: string;
     loan_amount: string | number;
-    status?: "APPROVED" | "PENDING" | "PROCESSING" | "COMPLETED" | "WARNING" | "FAILED";
+    status?: "APPROVED" | "PENDING" | "PROCESSING" | "COMPLETED" | "WARNING" | "FAILED" | string;
     date?: string;
 }
 
 const BRAND_OPTIONS = [
     { label: "Riverlend", value: "riverlend" },
-    { label: "Rapid Trust Capital", value: "rapid_trust_capital" },
-    { label: "Ridge View Loans", value: "ridge_view_loans" },
-    { label: "Universal Lending LLC", value: "universal_lending_llc" },
-    { label: "Bright Relief", value: "bright_relief" },
+    { label: "Rapid Trust Capital", value: "rapidtrust" },
+    { label: "Ridge View Loans", value: "ridgeviewloans" },
+    { label: "Universal Lending LLC", value: "universallending" },
+    { label: "Bright Relief", value: "brightrelief" },
 ];
 
 const BRAND_NAME_MAP: Record<string, string> = {
     riverlend: "Riverlend",
-    rapid_trust_capital: "Rapid Trust Capital",
-    ridge_view_loans: "Ridge View Loans",
-    universal_lending_llc: "Universal Lending LLC",
-    bright_relief: "Bright Relief",
+    rapidtrust: "Rapid Trust Capital",
+    ridgeviewloans: "Ridge View Loans",
+    universallending: "Universal Lending LLC",
+    brightrelief: "Bright Relief",
 };
 
 const MOCK_LOAN_DATA: LoanReportItem[] = [
@@ -237,6 +238,47 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
     },
 ];
 
+// Normalize backend API loan record into LoanReportItem
+function normalizeApiRecord(raw: ApiLoanRecord, index: number, currentBrand: string): LoanReportItem {
+    const payload = raw.payload || {};
+    const rawName = (payload.name || raw.name || "").trim();
+    let firstName = payload.first_name || raw.first_name || "";
+    let lastName = payload.last_name || raw.last_name || "";
+    if (!firstName && rawName) {
+        const parts = rawName.split(" ");
+        firstName = parts[0] || "Applicant";
+        lastName = parts.slice(1).join(" ") || "";
+    }
+
+    const email = payload.email || raw.email || "—";
+    const phone = payload.phone || payload.cell || raw.phone || raw.cell || "—";
+    const address = payload.address || raw.address || "—";
+    const city = payload.city || raw.city || "—";
+    const state = payload.state || raw.state || "—";
+    const zipcode = payload.zipcode || raw.zipcode || "—";
+    const refcode = payload.refcode || raw.refcode || `REF${raw.lead_id || index + 100}`;
+    const loanAmount = payload.loan_amount || raw.loan_amount || "0";
+    const status = (payload.status || raw.status || "APPROVED") as LoanReportItem["status"];
+    const date = raw.created_at?.split(" ")[0] || raw.date || "2026-08-27";
+
+    return {
+        id: String(raw.id || raw.lead_id || `REC-${1000 + index}`),
+        first_name: firstName || "Applicant",
+        last_name: lastName,
+        email,
+        phone,
+        address,
+        city,
+        state,
+        zipcode,
+        refcode,
+        brand: raw.brand || raw.site_name || currentBrand,
+        loan_amount: loanAmount,
+        status,
+        date,
+    };
+}
+
 // Helper to format phone number nicely e.g. 3125551020 -> (312) 555-1020
 function formatPhoneNumber(phone: string): string {
     const cleaned = phone.replace(/\D/g, "");
@@ -259,18 +301,77 @@ function formatCurrency(amount: string | number): string {
 export default function Report() {
     // Filters State
     const [searchValue, setSearchValue] = useState("");
-    const [selectedBrand, setSelectedBrand] = useState<string | number>("");
+    const [selectedBrand, setSelectedBrand] = useState<string | number>("riverlend");
     const [selectedState, setSelectedState] = useState<string | number>("");
     const [selectedStatus, setSelectedStatus] = useState<string | number>("");
-    const [dateRange, setDateRange] = useState<DateRange | undefined>();
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        startDate: "2026-08-25",
+        endDate: "2026-08-30",
+        preset: "today",
+        label: "Aug 25 - Aug 30, 2026",
+    });
+
+    // Remote Data State
+    const [dataList, setDataList] = useState<LoanReportItem[]>(MOCK_LOAN_DATA);
+    const [isLoading, setIsLoading] = useState(false);
+    const [fetchError, setFetchError] = useState<string | null>(null);
+    console.log(fetchError);
 
     // Table Control State
-    const [isLoading, setIsLoading] = useState(false);
     const [sortKey, setSortKey] = useState<string>("first_name");
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(6);
+    const [pageSize, setPageSize] = useState(10);
     const [selectedRecord, setSelectedRecord] = useState<LoanReportItem | null>(null);
+
+    // Fetch API Data
+    const fetchData = useCallback(async () => {
+        setIsLoading(true);
+        setFetchError(null);
+        try {
+            const brandParam = String(selectedBrand || "riverlend");
+            const response = await reportService.getValues({
+                site_name: brandParam,
+                start_date: dateRange?.startDate || "2026-08-25",
+                end_date: dateRange?.endDate || "2026-08-30",
+                page: currentPage,
+                limit: pageSize,
+            });
+
+            // Extract records array from various possible backend response formats
+            const rawArray: ApiLoanRecord[] =
+                (Array.isArray(response) ? response : null) ||
+                response?.data ||
+                response?.results ||
+                response?.records ||
+                response?.values ||
+                [];
+
+            if (Array.isArray(rawArray) && rawArray.length > 0) {
+                const normalized = rawArray.map((r, i) => normalizeApiRecord(r, i, brandParam));
+                setDataList(normalized);
+            } else {
+                // If API returns empty or format not containing list, filter mock dataset as fallback
+                const fallbackFiltered = MOCK_LOAN_DATA.filter(
+                    (item) => !selectedBrand || item.brand === selectedBrand
+                );
+                setDataList(fallbackFiltered);
+            }
+        } catch (err) {
+            console.warn("API call failed or blocked by CORS/network, using local dataset fallback:", err);
+            setFetchError("Live API request failed. Displaying local dataset.");
+            const fallbackFiltered = MOCK_LOAN_DATA.filter(
+                (item) => !selectedBrand || item.brand === selectedBrand
+            );
+            setDataList(fallbackFiltered);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [selectedBrand, dateRange, currentPage, pageSize]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     // Sorting Handler
     const handleSort = (_colIndex: number, headerKey?: string) => {
@@ -290,7 +391,7 @@ export default function Report() {
 
     // Filter & Sort Logic
     const filteredAndSortedData = useMemo(() => {
-        const result = MOCK_LOAN_DATA.filter((item) => {
+        const result = dataList.filter((item) => {
             // Search across all requested fields
             const query = searchValue.toLowerCase().trim();
             const fullName = `${item.first_name} ${item.last_name}`.toLowerCase();
@@ -317,13 +418,7 @@ export default function Report() {
             const matchesStatus =
                 !selectedStatus || item.status?.toUpperCase() === String(selectedStatus).toUpperCase();
 
-            // Date Range Filter
-            let matchesDate = true;
-            if (dateRange?.startDate && dateRange?.endDate && item.date) {
-                matchesDate = item.date >= dateRange.startDate && item.date <= dateRange.endDate;
-            }
-
-            return matchesSearch && matchesBrand && matchesState && matchesStatus && matchesDate;
+            return matchesSearch && matchesBrand && matchesState && matchesStatus;
         });
 
         // Sort
@@ -348,7 +443,7 @@ export default function Report() {
         });
 
         return result;
-    }, [searchValue, selectedBrand, selectedState, selectedStatus, dateRange, sortKey, sortDirection]);
+    }, [dataList, searchValue, selectedBrand, selectedState, selectedStatus, sortKey, sortDirection]);
 
     // Paginated Rows
     const paginatedData = useMemo(() => {
@@ -404,13 +499,7 @@ export default function Report() {
                     className: "text-xs text-muted-foreground",
                 },
             },
-            // Col 4: Status
-            {
-                statusBadge: {
-                    status: item.status || "APPROVED",
-                },
-            },
-            // Col 5: Loan Amount & Date
+            // Col 4: Loan Amount & Date
             {
                 align: "right",
                 title: {
@@ -422,7 +511,7 @@ export default function Report() {
                     className: "text-xs",
                 },
             },
-            // Col 6: Actions
+            // Col 5: Actions
             {
                 align: "right",
                 action: (
@@ -450,18 +539,16 @@ export default function Report() {
 
     // Headers definition
     const tableHeaders: TableHeader[] = [
-        { key: "first_name", label: "Applicant / Refcode", sortable: true, width: "24%" },
-        { key: "email", label: "Email & Phone", sortable: true, width: "22%" },
-        { key: "city", label: "Address & Location", sortable: true, width: "26%" },
-        { key: "status", label: "Status", sortable: true, width: "12%" },
-        { key: "loan_amount", label: "Loan Amount", sortable: true, align: "right", width: "12%" },
+        { key: "first_name", label: "Applicant / Refcode", sortable: true, width: "28%" },
+        { key: "email", label: "Email & Phone", sortable: true, width: "26%" },
+        { key: "city", label: "Address & Location", sortable: true, width: "28%" },
+        { key: "loan_amount", label: "Loan Amount", sortable: true, align: "right", width: "14%" },
         { label: "Actions", align: "right", width: "4%" },
     ];
 
-    // Simulating reload action
+    // Reload action
     const handleReload = () => {
-        setIsLoading(true);
-        setTimeout(() => setIsLoading(false), 600);
+        fetchData();
     };
 
     return (
