@@ -1,56 +1,150 @@
 @import "tailwindcss";
 
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-}
-
 /* ----------------------------------------------------------------------------
-   Flowboard — premium light theme
-   Aesthetic: soft lavender off-white page · crisp white surfaces that float ·
-              a single violet accent (iris → lavender gradient) · generous
-              rounding · two soft layered shadows · confident display type.
-   Premium comes from restraint + depth (bg ≠ surface), not decoration.
-   Type:    Space Grotesk (display) + Inter (body)
+   Theme Token System & CSS Variables
+   Change primary brand variables here to immediately rebrand the entire application.
 ---------------------------------------------------------------------------- */
-@theme {
-  /* surfaces — page is off-white, cards are pure white ON TOP of it */
-  --color-bg: #fff;
-  /* cool lavender off-white page */
-  --color-surface: #ffffff;
-  /* cards float on the bg */
-  --color-surface-2: #f1f0f9;
-  /* tracks, neutral chips, hover fills */
-  --color-elevated: #e8e7f3;
-  /* pressed / stronger neutral */
-  --color-line: #e9e8f3;
-  /* near-invisible hairline */
+:root {
+  /* ─── Brand Colors (Single Source of Truth) ─── */
+  --color-primary: #2f8159;
+  --color-primary-hover: #246646;
+  --color-primary-active: #1d5038;
+  --color-primary-foreground: #ffffff;
+  --color-primary-subtle: #ebf6ef;
+  --color-primary-subtle-foreground: #1d5038;
+  --color-primary-border: #8bc4a4;
+  --color-primary-gradient-from: #1c4430;
+  --color-primary-gradient-via: #2c6b49;
+  --color-primary-gradient-to: #34825a;
+  --color-primary-rgb: 47, 129, 89;
 
+  /* ─── Surfaces & Neutrals ─── */
+  --color-background: #ffffff;
+  --color-foreground: #16161d;
+  --color-card: #ffffff;
+  --color-card-foreground: #16161d;
+  --color-secondary: #f1f0f9;
+  --color-secondary-foreground: #16161d;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f0f9;
+  --color-elevated: #e8e7f3;
+  --color-muted: #5d5d6e;
+  --color-muted-foreground: #5d5d6e;
+  --color-faint: #9a9aae;
+  --color-border: #e9e8f3;
+  --color-input: #ffffff;
+  --color-ring: #2f8159;
+  --color-line: #e9e8f3;
   --color-ink: #16161d;
 
-  /* brand — forest green */
-  --color-brand-50: #eaf5fb;
-  --color-brand-100: #d2eaf5;
-  --color-brand-300: #8bc8e2;
-  --color-brand-400: #57acd0;
-  --color-brand-500: #2389b8;
-  --color-brand-600: #1b6f99;
-  --color-brand-700: #155e8a;
+  /* ─── Semantic Status ─── */
+  --color-destructive: #e11d48;
+  --color-destructive-foreground: #ffffff;
+  --color-success: #10b981;
+  --color-success-foreground: #ffffff;
+  --color-warning: #f59e0b;
+  --color-warning-foreground: #ffffff;
+  --color-info: #0ea5e9;
+  --color-info-foreground: #ffffff;
 
-  --color-muted: #5d5d6e;
-  --color-faint: #9a9aae;
-
+  /* ─── Priority System ─── */
   --color-priority-low: #0ea5e9;
   --color-priority-medium: #d97706;
   --color-priority-high: #ea580c;
   --color-priority-urgent: #e11d48;
+
+  /* ─── Brand Scale Aliases (Backwards Compatibility) ─── */
+  --color-brand-50: #ebf6ef;
+  --color-brand-100: #d2e9db;
+  --color-brand-300: #8bc4a4;
+  --color-brand-400: #57a47b;
+  --color-brand-500: #2f8159;
+  --color-brand-600: #246646;
+  --color-brand-700: #1d5038;
+}
+
+/* ----------------------------------------------------------------------------
+   Dark Theme Definition
+---------------------------------------------------------------------------- */
+.dark,
+[data-theme="dark"] {
+  --color-background: #0d0f12;
+  --color-foreground: #f2f3f5;
+  --color-card: #15181e;
+  --color-card-foreground: #f2f3f5;
+  --color-secondary: #1a1e26;
+  --color-secondary-foreground: #f2f3f5;
+  --color-surface: #15181e;
+  --color-surface-2: #1a1e26;
+  --color-elevated: #242a35;
+  --color-muted: #9ba1ad;
+  --color-muted-foreground: #9ba1ad;
+  --color-faint: #5e6675;
+  --color-border: #232833;
+  --color-input: #15181e;
+  --color-ring: #57a47b;
+  --color-line: #232833;
+  --color-ink: #f2f3f5;
+
+  --color-primary-subtle: #12281c;
+  --color-primary-subtle-foreground: #8bc4a4;
+}
+
+/* ----------------------------------------------------------------------------
+   Tailwind Theme Mapping
+---------------------------------------------------------------------------- */
+@theme {
+  /* Semantic tokens */
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-active: var(--color-primary-active);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-primary-subtle: var(--color-primary-subtle);
+  --color-primary-subtle-foreground: var(--color-primary-subtle-foreground);
+  --color-primary-border: var(--color-primary-border);
+
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-faint: var(--color-faint);
+  --color-border: var(--color-border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+
+  --color-destructive: var(--color-destructive);
+  --color-destructive-foreground: var(--color-destructive-foreground);
+  --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
+  --color-warning: var(--color-warning);
+  --color-warning-foreground: var(--color-warning-foreground);
+  --color-info: var(--color-info);
+  --color-info-foreground: var(--color-info-foreground);
+
+  /* Surface & Legacy Aliases */
+  --color-bg: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-surface-2: var(--color-surface-2);
+  --color-elevated: var(--color-elevated);
+  --color-line: var(--color-border);
+  --color-ink: var(--color-foreground);
+
+  --color-brand-50: var(--color-brand-50);
+  --color-brand-100: var(--color-brand-100);
+  --color-brand-300: var(--color-brand-300);
+  --color-brand-400: var(--color-brand-400);
+  --color-brand-500: var(--color-brand-500);
+  --color-brand-600: var(--color-brand-600);
+  --color-brand-700: var(--color-brand-700);
+
+  --color-priority-low: var(--color-priority-low);
+  --color-priority-medium: var(--color-priority-medium);
+  --color-priority-high: var(--color-priority-high);
+  --color-priority-urgent: var(--color-priority-urgent);
 
   --radius-xl: 1.1rem;
   --radius-pill: 999px;
@@ -61,24 +155,33 @@ body {
   --font-display:
     "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* signature easing — used for nearly every transition */
+  /* signature easing */
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* refined, slightly violet-tinted layered shadows */
+  /* layered shadows */
   --shadow-card:
     0 1px 2px rgba(28, 27, 64, 0.04), 0 1px 3px rgba(28, 27, 64, 0.04);
   --shadow-soft:
     0 8px 24px rgba(28, 27, 64, 0.08), 0 2px 6px rgba(28, 27, 64, 0.04);
   --shadow-lift:
     0 20px 50px rgba(28, 27, 64, 0.14), 0 6px 16px rgba(28, 27, 64, 0.07);
-  --shadow-brand: 0 10px 28px rgba(36, 102, 70, 0.32);
+  --shadow-brand: 0 10px 28px rgba(var(--color-primary-rgb), 0.32);
 }
 
 /* ----------------------------------------------------------------------------
-   Base
+   Base & Reset
 ---------------------------------------------------------------------------- */
 * {
-  border-color: var(--color-line);
+  box-sizing: border-box;
+  border-color: var(--color-border);
+}
+
+html,
+body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
 }
 
 /* user preference (Settings → Reduce motion) */
@@ -96,15 +199,15 @@ html {
 }
 
 body {
-  background-color: var(--color-bg);
-  color: var(--color-ink);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-feature-settings: "cv01", "cv02", "ss01";
 }
 
-/* Ambient brand wash — keeps the off-white page alive */
+/* Ambient brand wash — dynamically tied to primary brand color */
 body::before {
   content: "";
   position: fixed;
@@ -113,12 +216,12 @@ body::before {
   background:
     radial-gradient(
       60rem 42rem at 92% -14%,
-      rgba(47, 129, 89, 0.12),
+      rgba(var(--color-primary-rgb), 0.12),
       transparent 60%
     ),
     radial-gradient(
       48rem 40rem at -10% 110%,
-      rgba(63, 158, 108, 0.09),
+      rgba(var(--color-primary-rgb), 0.08),
       transparent 55%
     );
   pointer-events: none;
@@ -143,14 +246,14 @@ h3,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d3d2e4;
+  background: var(--color-elevated);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #bfbdd6;
+  background: var(--color-faint);
   background-clip: padding-box;
 }
 
@@ -159,26 +262,25 @@ h3,
 ---------------------------------------------------------------------------- */
 @layer components {
   .glass {
-    background: color-mix(in oklab, var(--color-bg) 72%, transparent);
+    background: color-mix(in oklab, var(--color-background) 75%, transparent);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
   }
 
   .card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-line);
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-card);
+    color: var(--color-card-foreground);
   }
 
-  /* shared field styles — radius is applied per-field in the component
-     (pills for single-line, rounded-2xl for textareas) */
   .input-base {
     width: 100%;
-    background: var(--color-surface);
-    border: 1px solid var(--color-line);
+    background: var(--color-input);
+    border: 1px solid var(--color-border);
     padding: 0.6rem 1rem;
-    color: var(--color-ink);
+    color: var(--color-foreground);
     font-size: 0.875rem;
     outline: none;
     transition:
@@ -191,24 +293,24 @@ h3,
   }
 
   .input-base:focus {
-    border-color: color-mix(in oklab, var(--color-brand-500) 55%, transparent);
-    box-shadow: 0 0 0 4px rgba(47, 129, 89, 0.16);
+    border-color: color-mix(in oklab, var(--color-primary) 55%, transparent);
+    box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), 0.16);
   }
 
   .focus-ring:focus-visible {
     outline: none;
     box-shadow:
-      0 0 0 2px var(--color-bg),
-      0 0 0 4px var(--color-brand-500);
+      0 0 0 2px var(--color-background),
+      0 0 0 4px var(--color-ring);
   }
 
-  /* the brand gradient, reusable — deep forest → fresh green */
+  /* Centralized reusable brand gradient */
   .brand-gradient {
     background-image: linear-gradient(
       140deg,
-      #0f2f4f 0%,
-      #155e8a 52%,
-      #2389b8 100%
+      var(--color-primary-gradient-from) 0%,
+      var(--color-primary-gradient-via) 52%,
+      var(--color-primary-gradient-to) 100%
     );
   }
 }
@@ -218,14 +320,11 @@ h3,
     animation: fade-in 0.24s var(--ease-spring) both;
   }
 
-  /* slowly pan the brand gradient so the hero panel feels alive */
   .animate-gradient-pan {
     background-size: 220% 220%;
     animation: gradient-pan 14s ease-in-out infinite;
   }
 
-  /* self-drawing line animation for outline (lucide) icons — loops forever.
-     used on the TOP layer; a static base icon sits underneath. */
   .icon-draw :is(path, line, polyline, polygon, circle, rect, ellipse) {
     stroke: var(--trace-stroke, currentColor);
     stroke-dasharray: 120;
@@ -238,7 +337,6 @@ h3,
     animation-delay: var(--draw-delay, 0s);
   }
 
-  /* never leave an icon stuck hidden when motion is reduced */
   @media (prefers-reduced-motion: reduce) {
     .icon-draw :is(path, line, polyline, polygon, circle, rect, ellipse) {
       stroke-dashoffset: 0;
@@ -257,26 +355,23 @@ h3,
     display: none;
   }
 
-  /* tabular numbers — every metric & count uses this so digits don't jitter */
   .tabular {
     font-variant-numeric: tabular-nums;
   }
 
-  /* diagonal hatch — used for "empty / no data" chart bars */
   .hatch {
     background-image: repeating-linear-gradient(
       135deg,
-      color-mix(in oklab, var(--color-ink) 8%, transparent) 0 1.5px,
+      color-mix(in oklab, var(--color-foreground) 8%, transparent) 0 1.5px,
       transparent 1.5px 7px
     );
   }
 
   .text-gradient {
     background-image: linear-gradient(
-      140deg,
-      #0f2f4f 0%,
-      #155e8a 52%,
-      #2389b8 100%
+      135deg,
+      var(--color-primary) 0%,
+      var(--color-primary-border) 100%
     );
     -webkit-background-clip: text;
     background-clip: text;
@@ -289,45 +384,37 @@ h3,
     opacity: 0;
     transform: translateY(5px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* drifting pan for the hero brand gradient */
 @keyframes gradient-pan {
   0%,
   100% {
     background-position: 0% 50%;
   }
-
   50% {
     background-position: 100% 50%;
   }
 }
 
-/* stroke draw-on for outline icons — draw in, hold, then erase out */
 @keyframes icon-draw {
   0% {
     stroke-dashoffset: 120;
   }
-
   40% {
     stroke-dashoffset: 0;
   }
-
   60% {
     stroke-dashoffset: 0;
   }
-
   100% {
     stroke-dashoffset: -120;
   }
 }
 
-/* Skeleton shimmer */
 @keyframes shimmer {
   100% {
     transform: translateX(100%);

@@ -25,7 +25,7 @@ const Spinner = ({
     >
       <div
         className={cn(
-          "animate-spin rounded-full border-solid border-muted/30 border-t-brand-500",
+          "animate-spin rounded-full border-solid border-muted/30 border-t-primary",
           sizeClasses[size],
           className
         )}

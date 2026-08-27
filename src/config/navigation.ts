@@ -13,8 +13,7 @@ export interface NavItem {
     shortcut?: string;
     description?: string;
     disabled?: boolean;
-
-
+    onClick?: () => void;
 }
 
 export interface NavSection {

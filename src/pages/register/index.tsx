@@ -129,11 +129,11 @@ const RegisterPage: React.FC = () => {
                         </form>
                     </div>
 
-                    <p className="mt-5 text-center text-sm text-muted">
+                    <p className="mt-5 text-center text-sm text-muted-foreground">
                         Already have an account?{" "}
                         <Link
                             to="/login"
-                            className="font-semibold text-brand-600 hover:text-brand-500"
+                            className="font-semibold text-primary hover:text-primary-hover"
                         >
                             Log in
                         </Link>
@@ -142,8 +142,10 @@ const RegisterPage: React.FC = () => {
             </div>
 
             <AuthAside
-                title="Start shipping with AI"
-                subtitle="Join 2,500+ teams turning one-line goals into shipped work."
+                title="Create your account & get started"
+                subtitle="Join thousands of teams and creators building scalable solutions worldwide."
+                badgeText="Global infrastructure · 99.99% uptime"
+                badgeIcon="public"
             />
         </div>
     );

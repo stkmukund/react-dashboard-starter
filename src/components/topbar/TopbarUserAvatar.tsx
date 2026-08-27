@@ -29,8 +29,8 @@ export default function TopbarUserAvatar({
         <div
             className="
         flex h-8 w-8 items-center justify-center
-        rounded-full bg-brand-100
-        text-xs font-semibold text-brand-700
+        rounded-full bg-primary-subtle
+        text-xs font-semibold text-primary-subtle-foreground
       "
         >
             {initials}

@@ -179,11 +179,10 @@ export default function DashboardPage() {
                                 <Icon name={card.icon} filled size={20} />
                             </div>
                             <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                                    card.isPositive
+                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${card.isPositive
                                         ? "bg-emerald-50 text-emerald-700"
                                         : "bg-rose-50 text-rose-700"
-                                }`}
+                                    }`}
                             >
                                 <Icon
                                     name={card.isPositive ? "trending_up" : "trending_down"}
@@ -206,9 +205,8 @@ export default function DashboardPage() {
 
                         {/* Mini Decorative Sparkline SVG Chart */}
                         <div
-                            className={`pointer-events-none absolute bottom-0 right-0 h-14 w-28 transition-opacity duration-300 ${
-                                hoveredKpi === i ? "opacity-40" : "opacity-20"
-                            }`}
+                            className={`pointer-events-none absolute bottom-0 right-0 h-14 w-28 transition-opacity duration-300 ${hoveredKpi === i ? "opacity-40" : "opacity-20"
+                                }`}
                         >
                             <svg
                                 className="h-full w-full"
@@ -447,14 +445,14 @@ export default function DashboardPage() {
                                     </td>
                                     <td className="py-3.5 pl-4 pr-6 text-right">
                                         <div className="inline-flex items-center gap-1">
-                                            <button 
+                                            <button
                                                 type="button"
                                                 aria-label="View deployment"
                                                 className="rounded-lg p-1 text-faint transition-colors hover:bg-surface-2 hover:text-ink"
                                             >
                                                 <Icon name="visibility" size={16} />
                                             </button>
-                                            <button 
+                                            <button
                                                 type="button"
                                                 aria-label="More options"
                                                 className="rounded-lg p-1 text-faint transition-colors hover:bg-surface-2 hover:text-ink"

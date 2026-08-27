@@ -132,11 +132,11 @@ const LoginPage = () => {
             </form>
           </div>
 
-          <p className="mt-5 text-center text-sm text-muted">
+          <p className="mt-5 text-center text-sm text-muted-foreground">
             New here?{" "}
             <Link
               to="/register"
-              className="font-semibold text-brand-600 hover:text-brand-500"
+              className="font-semibold text-primary hover:text-primary-hover"
             >
               Create an account
             </Link>
@@ -146,7 +146,9 @@ const LoginPage = () => {
 
       <AuthAside
         title={`Welcome back to ${appConfig.name}`}
-        subtitle="Log in and pick up right where you and your team left off."
+        subtitle="Sign in securely to manage your applications, insights, and global operations."
+        badgeText="Enterprise-grade security & reliability"
+        badgeIcon="verified_user"
       />
     </div>
   );
