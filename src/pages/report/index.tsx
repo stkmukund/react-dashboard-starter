@@ -20,10 +20,27 @@ export interface LoanReportItem {
     state: string;
     zipcode: string;
     refcode: string;
+    brand?: string;
     loan_amount: string | number;
     status?: "APPROVED" | "PENDING" | "PROCESSING" | "COMPLETED" | "WARNING" | "FAILED";
     date?: string;
 }
+
+const BRAND_OPTIONS = [
+    { label: "Riverlend", value: "riverlend" },
+    { label: "Rapid Trust Capital", value: "rapid_trust_capital" },
+    { label: "Ridge View Loans", value: "ridge_view_loans" },
+    { label: "Universal Lending LLC", value: "universal_lending_llc" },
+    { label: "Bright Relief", value: "bright_relief" },
+];
+
+const BRAND_NAME_MAP: Record<string, string> = {
+    riverlend: "Riverlend",
+    rapid_trust_capital: "Rapid Trust Capital",
+    ridge_view_loans: "Ridge View Loans",
+    universal_lending_llc: "Universal Lending LLC",
+    bright_relief: "Bright Relief",
+};
 
 const MOCK_LOAN_DATA: LoanReportItem[] = [
     {
@@ -37,6 +54,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "IL",
         zipcode: "60631",
         refcode: "RLM1020",
+        brand: "riverlend",
         loan_amount: "19000",
         status: "APPROVED",
         date: "2026-08-25",
@@ -52,6 +70,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "NY",
         zipcode: "10001",
         refcode: "RLM1021",
+        brand: "rapid_trust_capital",
         loan_amount: "35000",
         status: "PROCESSING",
         date: "2026-08-26",
@@ -67,6 +86,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "FL",
         zipcode: "33139",
         refcode: "RLM1022",
+        brand: "ridge_view_loans",
         loan_amount: "50000",
         status: "COMPLETED",
         date: "2026-08-20",
@@ -82,6 +102,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "CA",
         zipcode: "94105",
         refcode: "RLM1023",
+        brand: "universal_lending_llc",
         loan_amount: "28500",
         status: "PENDING",
         date: "2026-08-27",
@@ -97,6 +118,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "TX",
         zipcode: "78701",
         refcode: "RLM1024",
+        brand: "bright_relief",
         loan_amount: "15000",
         status: "APPROVED",
         date: "2026-08-14",
@@ -112,6 +134,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "WA",
         zipcode: "98101",
         refcode: "RLM1025",
+        brand: "riverlend",
         loan_amount: "42000",
         status: "COMPLETED",
         date: "2026-08-18",
@@ -127,6 +150,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "NV",
         zipcode: "89109",
         refcode: "RLM1026",
+        brand: "rapid_trust_capital",
         loan_amount: "22000",
         status: "PROCESSING",
         date: "2026-08-27",
@@ -142,6 +166,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "AZ",
         zipcode: "85013",
         refcode: "RLM1027",
+        brand: "ridge_view_loans",
         loan_amount: "18500",
         status: "APPROVED",
         date: "2026-08-10",
@@ -157,6 +182,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "CO",
         zipcode: "80202",
         refcode: "RLM1028",
+        brand: "universal_lending_llc",
         loan_amount: "62000",
         status: "COMPLETED",
         date: "2026-08-05",
@@ -172,6 +198,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "MA",
         zipcode: "02116",
         refcode: "RLM1029",
+        brand: "bright_relief",
         loan_amount: "31000",
         status: "WARNING",
         date: "2026-08-12",
@@ -187,6 +214,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "GA",
         zipcode: "30326",
         refcode: "RLM1030",
+        brand: "riverlend",
         loan_amount: "9500",
         status: "FAILED",
         date: "2026-07-28",
@@ -202,6 +230,7 @@ const MOCK_LOAN_DATA: LoanReportItem[] = [
         state: "IL",
         zipcode: "60611",
         refcode: "RLM1031",
+        brand: "rapid_trust_capital",
         loan_amount: "48000",
         status: "COMPLETED",
         date: "2026-08-24",
@@ -230,6 +259,7 @@ function formatCurrency(amount: string | number): string {
 export default function Report() {
     // Filters State
     const [searchValue, setSearchValue] = useState("");
+    const [selectedBrand, setSelectedBrand] = useState<string | number>("");
     const [selectedState, setSelectedState] = useState<string | number>("");
     const [selectedStatus, setSelectedStatus] = useState<string | number>("");
     const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -253,11 +283,10 @@ export default function Report() {
         }
     };
 
-    // Extract unique states for filter dropdown
-    // const uniqueStates = useMemo(() => {
-    //     const states = Array.from(new Set(MOCK_LOAN_DATA.map((item) => item.state))).sort();
-    //     return states.map((state) => ({ label: state, value: state }));
-    // }, []);
+    // Extract unique brands for filter dropdown
+    const uniqueBrands = useMemo(() => {
+        return BRAND_OPTIONS;
+    }, []);
 
     // Filter & Sort Logic
     const filteredAndSortedData = useMemo(() => {
@@ -271,11 +300,15 @@ export default function Report() {
                 item.email.toLowerCase().includes(query) ||
                 item.phone.includes(query) ||
                 item.refcode.toLowerCase().includes(query) ||
+                (item.brand && item.brand.toLowerCase().includes(query)) ||
                 item.city.toLowerCase().includes(query) ||
                 item.state.toLowerCase().includes(query) ||
                 item.zipcode.includes(query) ||
                 item.address.toLowerCase().includes(query) ||
                 item.loan_amount.toString().includes(query);
+
+            // Brand Filter
+            const matchesBrand = !selectedBrand || item.brand === selectedBrand;
 
             // State Filter
             const matchesState = !selectedState || item.state === selectedState;
@@ -290,7 +323,7 @@ export default function Report() {
                 matchesDate = item.date >= dateRange.startDate && item.date <= dateRange.endDate;
             }
 
-            return matchesSearch && matchesState && matchesStatus && matchesDate;
+            return matchesSearch && matchesBrand && matchesState && matchesStatus && matchesDate;
         });
 
         // Sort
@@ -315,7 +348,7 @@ export default function Report() {
         });
 
         return result;
-    }, [searchValue, selectedState, selectedStatus, dateRange, sortKey, sortDirection]);
+    }, [searchValue, selectedBrand, selectedState, selectedStatus, dateRange, sortKey, sortDirection]);
 
     // Paginated Rows
     const paginatedData = useMemo(() => {
@@ -343,7 +376,9 @@ export default function Report() {
                     onClick: () => setSelectedRecord(item),
                 },
                 desc: {
-                    value: item.refcode,
+                    value: item.brand
+                        ? `${item.refcode} • ${BRAND_NAME_MAP[item.brand] || item.brand}`
+                        : item.refcode,
                     className: "font-mono text-xs font-medium text-primary",
                 },
             },
@@ -496,35 +531,18 @@ export default function Report() {
                     setSearchValue(val);
                     setCurrentPage(1);
                 }}
-                searchPlaceholder="Search by name, email, phone, city, state, refcode..."
+                searchPlaceholder="Search by name, email, phone, city, state, refcode, brand..."
                 filters={[
-                    // {
-                    //     id: "state",
-                    //     label: "State",
-                    //     value: selectedState,
-                    //     onChange: (val) => {
-                    //         setSelectedState(val);
-                    //         setCurrentPage(1);
-                    //     },
-                    //     options: uniqueStates,
-                    // },
-                    // {
-                    //     id: "status",
-                    //     label: "Status",
-                    //     value: selectedStatus,
-                    //     onChange: (val) => {
-                    //         setSelectedStatus(val);
-                    //         setCurrentPage(1);
-                    //     },
-                    //     options: [
-                    //         { label: "Approved", value: "APPROVED" },
-                    //         { label: "Pending", value: "PENDING" },
-                    //         { label: "Processing", value: "PROCESSING" },
-                    //         { label: "Completed", value: "COMPLETED" },
-                    //         { label: "Warning", value: "WARNING" },
-                    //         { label: "Failed", value: "FAILED" },
-                    //     ],
-                    // },
+                    {
+                        id: "brand",
+                        label: "Brand",
+                        value: selectedBrand,
+                        onChange: (val) => {
+                            setSelectedBrand(val);
+                            setCurrentPage(1);
+                        },
+                        options: uniqueBrands,
+                    },
                 ]}
                 dateRange={{
                     selected: dateRange,
@@ -537,6 +555,7 @@ export default function Report() {
                 }}
                 onReset={() => {
                     setSearchValue("");
+                    setSelectedBrand("");
                     setSelectedState("");
                     setSelectedStatus("");
                     setDateRange(undefined);
@@ -590,6 +609,11 @@ export default function Report() {
                                     <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                                         {selectedRecord.refcode}
                                     </span>
+                                    {selectedRecord.brand && (
+                                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-surface-2 text-foreground font-medium border border-border">
+                                            {BRAND_NAME_MAP[selectedRecord.brand] || selectedRecord.brand}
+                                        </span>
+                                    )}
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-0.5">
                                     Applicant ID: {selectedRecord.id}
@@ -638,3 +662,4 @@ export default function Report() {
         </div>
     );
 }
+
