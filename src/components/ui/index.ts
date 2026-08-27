@@ -15,3 +15,7 @@ export { default as PromptDialog } from "./PromptDialog";
 export type { PromptDialogProps } from "./PromptDialog";
 export { Skeleton, BoardCardSkeleton, ColumnSkeleton } from "./Skeleton";
 export { default as Spinner, FullScreenSpinner } from "./Spinner";
+
+// Table and Filter Suite
+export * from "../table";
+

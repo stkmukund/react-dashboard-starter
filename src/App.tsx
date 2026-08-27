@@ -6,6 +6,8 @@ import DashboardPage from './pages/dashboard'
 import LoginPage from './pages/login'
 import NotFound from './pages/notFound'
 import RegisterPage from './pages/register'
+import SettingsPage from './pages/settings'
+import TableDemoPage from './pages/demo'
 import { ProtectedRoute, PublicOnlyRoute } from './routes'
 import Report from './pages/report'
 
@@ -42,8 +44,10 @@ function App() {
             }
           >
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/report" element={<Report />} />
+            <Route path="/demo" element={<TableDemoPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
+
 
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />

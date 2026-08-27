@@ -30,8 +30,13 @@ export const sidebarNavigation: NavSection[] = [
                 icon: "dashboard",
                 to: "/dashboard",
                 description: "Go to your main dashboard overview",
-
-
+            },
+            {
+                label: "Table & Filters",
+                icon: "table_chart",
+                to: "/demo",
+                badge: "Demo",
+                description: "Interactive showcase of dynamic table, pagination and filters",
             },
             {
                 label: "Report",
