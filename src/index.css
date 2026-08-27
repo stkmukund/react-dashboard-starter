@@ -6,16 +6,16 @@
 ---------------------------------------------------------------------------- */
 :root {
   /* ─── Brand Colors (Single Source of Truth) ─── */
-  --color-primary: #2f8159;
-  --color-primary-hover: #246646;
-  --color-primary-active: #1d5038;
+  --color-primary: #155e8a;
+  --color-primary-hover: #0f4d73;
+  --color-primary-active: #0b3c5a;
   --color-primary-foreground: #ffffff;
-  --color-primary-subtle: #ebf6ef;
-  --color-primary-subtle-foreground: #1d5038;
-  --color-primary-border: #8bc4a4;
-  --color-primary-gradient-from: #1c4430;
-  --color-primary-gradient-via: #2c6b49;
-  --color-primary-gradient-to: #34825a;
+  --color-primary-subtle: #eaf4f9;
+  --color-primary-subtle-foreground: #0f4d73;
+  --color-primary-border: #7fb3cf;
+  --color-primary-gradient-from: #0f2f4f;
+  --color-primary-gradient-via: #155e8a;
+  --color-primary-gradient-to: #2389b8;
   --color-primary-rgb: 47, 129, 89;
 
   /* ─── Surfaces & Neutrals ─── */
