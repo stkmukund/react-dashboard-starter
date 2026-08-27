@@ -214,7 +214,7 @@ const AuthAside: React.FC<AuthAsideProps> = ({
     return (
         <aside
             className={cn(
-                "relative hidden w-1/2 overflow-hidden lg:flex flex-col justify-between p-12 xl:p-16 select-none text-white",
+                "relative hidden w-1/2 overflow-hidden lg:flex flex-col justify-between p-6 xl:p-10 select-none text-white min-h-screen",
                 BG_VARIANTS[variant] || BG_VARIANTS.energetic,
                 className
             )}
@@ -228,20 +228,20 @@ const AuthAside: React.FC<AuthAsideProps> = ({
                 <div className="relative z-10">
                     <Link
                         to="/"
-                        className="inline-flex items-center gap-3.5 text-white transition hover:opacity-90 focus-ring rounded-xl"
+                        className="inline-flex items-center gap-3 text-white transition hover:opacity-90 focus-ring rounded-xl"
                         aria-label={`Back to ${brandName} home`}
                     >
                         {/* Playful Doodled container for logo */}
                         <span
-                            className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 shadow-lg backdrop-blur-sm"
+                            className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 shadow-lg backdrop-blur-sm"
                             style={{
-                                border: "2.5px solid rgba(255,255,255,0.2)",
-                                borderRadius: "18px 8px 18px 18px",
+                                border: "2px solid rgba(255,255,255,0.2)",
+                                borderRadius: "14px 6px 14px 14px",
                             }}
                         >
-                            <Icon name={brandIcon} className="text-white" size={24} filled />
+                            <Icon name={brandIcon} className="text-white" size={20} filled />
                         </span>
-                        <span className="font-display text-2xl font-extrabold tracking-tight">
+                        <span className="font-display text-xl font-extrabold tracking-tight">
                             {brandName}
                         </span>
                     </Link>
@@ -249,12 +249,12 @@ const AuthAside: React.FC<AuthAsideProps> = ({
             )}
 
             {/* Center Scene: Hero Character Animation */}
-            <div className="relative z-10 my-auto flex w-full flex-col items-center justify-center py-4">
+            <div className="relative z-10 my-auto flex w-full flex-col items-center justify-center py-2">
                 {children ? (
                     children
                 ) : (
                     <motion.div
-                        className="w-full max-w-md"
+                        className="w-full max-w-xs xl:max-w-sm"
                         initial={{ opacity: 0, y: 25 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.9, ease: DOODLE_EASE, delay: 0.1 }}
@@ -265,16 +265,16 @@ const AuthAside: React.FC<AuthAsideProps> = ({
             </div>
 
             {/* Bottom Text and Badge */}
-            <div className="relative z-10 mx-auto max-w-xl text-center">
+            <div className="relative z-10 mx-auto max-w-md text-center">
                 {badgeText && (
                     <motion.div
                         initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.6, delay: 0.6 }}
-                        className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-black/25 px-5 py-2 text-xs font-bold text-white shadow-inner backdrop-blur-md"
+                        className="mb-3.5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/25 px-4 py-1.5 text-xs font-bold text-white shadow-inner backdrop-blur-md"
                     >
                         {badgeIcon && (
-                            <Icon name={badgeIcon} size={16} className="text-amber-300" filled />
+                            <Icon name={badgeIcon} size={15} className="text-amber-300" filled />
                         )}
                         <span>{badgeText}</span>
                     </motion.div>
@@ -284,7 +284,7 @@ const AuthAside: React.FC<AuthAsideProps> = ({
                     initial={prefersReducedMotion ? undefined : { opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.75 }}
-                    className="font-display text-3xl xl:text-4xl font-extrabold leading-tight tracking-tight text-white"
+                    className="font-display text-2xl xl:text-3xl font-extrabold leading-snug tracking-tight text-white"
                 >
                     {title}
                 </motion.h2>
@@ -293,7 +293,7 @@ const AuthAside: React.FC<AuthAsideProps> = ({
                     initial={prefersReducedMotion ? undefined : { opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.9 }}
-                    className="mt-3.5 text-sm xl:text-base leading-relaxed text-white/85 font-normal"
+                    className="mt-2 text-xs xl:text-sm leading-relaxed text-white/85 font-normal"
                 >
                     {subtitle}
                 </motion.p>

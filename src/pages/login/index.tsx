@@ -1,8 +1,8 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
-import { appConfig } from "../../config";
+import { Link, useSearchParams } from "react-router-dom";
+import { appConfig, env } from "../../config";
 import AuthAside from "../../components/auth/AuthAside";
 import Button from "../../components/ui/Button";
 import Icon from "../../components/ui/Icon";
@@ -16,6 +16,10 @@ interface LoginForm {
 
 const LoginPage = () => {
   const { login } = useAuth();
+  const [searchParams] = useSearchParams();
+
+  // Show demo button only if ?demo=true or ?demo in query params
+  const showDemo = searchParams.get("demo") !== null;
 
   const [form, setForm] = useState<LoginForm>({
     email: "",
@@ -26,8 +30,8 @@ const LoginPage = () => {
 
   const fillDemo = () => {
     setForm({
-      email: "alex@timetoprogram.com",
-      password: "Test@1234",
+      email: env.demoEmail || "admin@gmail.com",
+      password: env.demoPassword || "admin@123",
     });
   };
 
@@ -59,17 +63,17 @@ const LoginPage = () => {
 
   return (
     <div className="flex min-h-screen">
-      <div className="flex w-full items-center justify-center px-4 py-10 lg:w-1/2">
+      <div className="flex w-full items-center justify-center px-4 py-6 sm:py-8 lg:w-1/2">
         <div className="w-full max-w-sm animate-in">
           <Link
             to="/"
-            className="mb-8 flex items-center justify-center gap-2.5 font-semibold"
+            className="mb-5 sm:mb-6 flex items-center justify-center gap-2.5 font-semibold"
           >
-            <div className="brand-gradient flex h-10 w-10 items-center justify-center rounded-2xl shadow-(--shadow-card)">
+            <div className="brand-gradient flex h-9 w-9 items-center justify-center rounded-2xl shadow-(--shadow-card)">
               <Icon
                 name={appConfig.logoIcon}
                 filled={true}
-                size={20}
+                size={18}
                 className="text-white"
               />
             </div>
@@ -79,16 +83,16 @@ const LoginPage = () => {
             </span>
           </Link>
 
-          <div className="card rounded-3xl p-8 shadow-(--shadow-soft)">
-            <h1 className="font-display text-2xl font-semibold tracking-tight">
+          <div className="card rounded-3xl p-6 sm:p-7 shadow-(--shadow-soft)">
+            <h1 className="font-display text-xl sm:text-2xl font-semibold tracking-tight">
               Welcome back
             </h1>
 
-            <p className="mt-1.5 text-sm text-muted">
+            <p className="mt-1 text-xs sm:text-sm text-muted">
               Log in to your workspace.
             </p>
 
-            <form onSubmit={onSubmit} className="mt-6 space-y-4">
+            <form onSubmit={onSubmit} className="mt-5 space-y-3.5">
               <Input
                 id="email"
                 label="Email"
@@ -120,19 +124,21 @@ const LoginPage = () => {
                 Log in
               </Button>
 
-              <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                className="w-full"
-                onClick={fillDemo}
-              >
-                Use demo account
-              </Button>
+              {showDemo && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className="w-full animate-in"
+                  onClick={fillDemo}
+                >
+                  Use demo account
+                </Button>
+              )}
             </form>
           </div>
 
-          <p className="mt-5 text-center text-sm text-muted-foreground">
+          <p className="mt-4 text-center text-xs sm:text-sm text-muted-foreground">
             New here?{" "}
             <Link
               to="/register"

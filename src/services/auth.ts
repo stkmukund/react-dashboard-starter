@@ -1,9 +1,28 @@
-import { api, endpoints } from "../api";
+import { api, endpoints, ApiError } from "../api";
+import { storage } from "../lib/storage";
 import type { User } from "../lib/interfaces";
+
+const USER_STORAGE_KEY = "auth_user";
 
 export interface LoginCredentials {
   email: string;
   password: string;
+}
+
+export interface VerifyCredentialsPayload {
+  username: string;
+  password: string;
+}
+
+export interface VerifyCredentialsUser {
+  id: number | string;
+  username: string;
+}
+
+export interface VerifyCredentialsResponse {
+  status: "success" | "error" | string;
+  message: string;
+  user?: VerifyCredentialsUser;
 }
 
 export interface RegisterCredentials {
@@ -23,90 +42,92 @@ export interface AuthResponse {
  */
 export const authService = {
   /**
-   * Log in user with credentials.
+   * Log in user with credentials via verifyCredentials API.
    */
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    // In local development or until a live server is connected,
-    // fallback gracefully if backend is unreachable or mock response if needed.
-    try {
-      return await api.post<AuthResponse, LoginCredentials>(endpoints.auth.login, {
-        data: credentials,
-      });
-    } catch (error) {
-      // If server is not running, provide demo account login for starter kit demoing
-      if (
-        credentials.email === "alex@timetoprogram.com" ||
-        credentials.email.endsWith("@company.com") ||
-        credentials.email.includes("demo")
-      ) {
-        return {
-          user: {
-            id: "usr_101",
-            name: credentials.email.split("@")[0],
-            email: credentials.email,
-            avatar_url: null,
-          },
-          token: "demo-starter-token-xyz",
-        };
+    const payload: VerifyCredentialsPayload = {
+      username: credentials.email.trim(),
+      password: credentials.password,
+    };
+
+    const response = await api.post<VerifyCredentialsResponse, VerifyCredentialsPayload>(
+      endpoints.auth.verifyCredentials,
+      {
+        data: payload,
       }
-      throw error;
+    );
+
+    if (response.status !== "success") {
+      throw new ApiError({
+        message: response.message || "Invalid username or password.",
+        status: 401,
+        data: response,
+      });
     }
+
+    // Set user name as requested: "Admin"
+    const user: User = {
+      id: response.user?.id ? String(response.user.id) : "1",
+      name: "Admin",
+      email: response.user?.username || credentials.email,
+      avatar_url: null,
+    };
+
+    // Generate or use session token to persist authenticated state
+    const token = `session_${response.user?.id || 1}_${Date.now()}`;
+
+    // Persist active user profile in local storage
+    storage.local.set(USER_STORAGE_KEY, user);
+
+    return {
+      user,
+      token,
+    };
   },
 
   /**
    * Register a new user.
    */
   register: async (credentials: RegisterCredentials): Promise<AuthResponse> => {
-    try {
-      return await api.post<AuthResponse, RegisterCredentials>(endpoints.auth.register, {
-        data: credentials,
-      });
-    } catch (error) {
-      // Fallback for offline starter exploration
-      if (credentials.email) {
-        return {
-          user: {
-            id: `usr_${Date.now()}`,
-            name: credentials.name,
-            email: credentials.email,
-            avatar_url: null,
-          },
-          token: `token_${Date.now()}`,
-        };
-      }
-      throw error;
-    }
+    const user: User = {
+      id: `usr_${Date.now()}`,
+      name: credentials.name,
+      email: credentials.email,
+      avatar_url: null,
+    };
+    const token = `token_${Date.now()}`;
+
+    storage.local.set(USER_STORAGE_KEY, user);
+
+    return {
+      user,
+      token,
+    };
   },
 
   /**
-   * Fetch currently authenticated user profile.
+   * Fetch currently authenticated user profile from persistent storage or fallback.
    */
   me: async (): Promise<User> => {
-    try {
-      const response = await api.get<{ user: User } | User>(endpoints.auth.me);
-      if ("user" in response && response.user) {
-        return response.user;
-      }
-      return response as User;
-    } catch {
-      // Fallback for stored demo token
-      return {
-        id: "usr_101",
-        name: "Alex Johnson",
-        email: "alex@timetoprogram.com",
-        avatar_url: null,
-      };
+    const storedUser = storage.local.get<User>(USER_STORAGE_KEY);
+    if (storedUser) {
+      return storedUser;
     }
+
+    // Fallback default admin user
+    return {
+      id: "1",
+      name: "Admin",
+      email: "admin@gmail.com",
+      avatar_url: null,
+    };
   },
 
   /**
-   * Logout user session.
+   * Logout user session and clear storage.
    */
   logout: async (): Promise<void> => {
-    try {
-      await api.post(endpoints.auth.logout);
-    } catch {
-      // Best-effort logout notification
-    }
+    storage.local.remove(USER_STORAGE_KEY);
   },
 };
+

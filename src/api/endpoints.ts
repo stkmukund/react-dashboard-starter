@@ -10,7 +10,8 @@
  */
 export const endpoints = {
   auth: {
-    login: "/auth/login",
+    login: "/verifyCredentials.php",
+    verifyCredentials: "/verifyCredentials.php",
     register: "/auth/register",
     logout: "/auth/logout",
     me: "/auth/me",
@@ -23,7 +24,7 @@ export const endpoints = {
     profile: "/users/profile",
   },
   reports: {
-    getValues: "/api/getValues.php",
+    getValues: "/getValues.php",
   },
 } as const;
 

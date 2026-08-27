@@ -1,5 +1,4 @@
-import axios from "axios";
-import { endpoints } from "../api";
+import { api, endpoints } from "../api";
 
 export const API_KEY_HEADER = "1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p";
 
@@ -90,18 +89,19 @@ export interface GetValuesResponse {
 
 /**
  * Service for fetching loan and application values from the backend API.
+ * Standardized to use the centralized API client.
  */
 export const reportService = {
   /**
    * Fetch loan submission report values with API key header and query parameters.
    */
   getValues: async (params: GetValuesParams = {}): Promise<GetValuesResponse> => {
-    const response = await axios.get<GetValuesResponse>(endpoints.reports.getValues, {
+    return await api.get<GetValuesResponse, GetValuesParams>(endpoints.reports.getValues, {
       params,
       headers: {
         "x-api-key": API_KEY_HEADER,
       },
     });
-    return response.data;
   },
 };
+

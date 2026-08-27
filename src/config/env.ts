@@ -15,6 +15,10 @@ interface EnvConfig {
   readonly apiBaseUrl: string;
   /** Timeout for API requests in milliseconds */
   readonly apiTimeout: number;
+  /** Demo account email */
+  readonly demoEmail: string;
+  /** Demo account password */
+  readonly demoPassword: string;
   /** Whether the application is running in production mode */
   readonly isProduction: boolean;
   /** Whether the application is running in development mode */
@@ -36,12 +40,17 @@ const parseTimeout = (value: unknown, fallback: number): number => {
 const rawAppBaseUrl = import.meta.env.VITE_BASE_PATH || import.meta.env.BASE_URL;
 const rawBaseUrl = import.meta.env.VITE_API_BASE_URL;
 const rawTimeout = import.meta.env.VITE_API_TIMEOUT;
+const rawDemoEmail = import.meta.env.VITE_DEMO_EMAIL;
+const rawDemoPassword = import.meta.env.VITE_DEMO_PASSWORD;
 
 export const env: EnvConfig = {
   appBaseUrl: (typeof rawAppBaseUrl === "string" && rawAppBaseUrl.trim()) || "/",
-  apiBaseUrl: (typeof rawBaseUrl === "string" && rawBaseUrl.trim()) || "http://localhost:3000/api",
+  apiBaseUrl: (typeof rawBaseUrl === "string" && rawBaseUrl.trim()) || "/api",
   apiTimeout: parseTimeout(rawTimeout, 15000),
+  demoEmail: (typeof rawDemoEmail === "string" && rawDemoEmail.trim()) || "",
+  demoPassword: (typeof rawDemoPassword === "string" && rawDemoPassword.trim()) || "",
   isProduction: import.meta.env.PROD,
   isDevelopment: import.meta.env.DEV,
   mode: import.meta.env.MODE,
 };
+

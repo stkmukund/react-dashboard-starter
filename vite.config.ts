@@ -5,8 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  // const basePath = env.VITE_BASE_PATH || process.env.VITE_BASE_PATH || env.BASE_URL || process.env.BASE_URL || '/'
-  const basePath = env.VITE_BASE_PATH || "/admin/"
+  const basePath = env.VITE_BASE_PATH || '/'
 
   return {
     base: basePath,
