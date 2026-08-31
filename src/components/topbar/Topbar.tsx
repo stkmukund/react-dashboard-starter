@@ -3,7 +3,6 @@ import type { TopbarProps } from "./types";
 import { cn } from "../../lib/utils";
 import Icon from "../ui/Icon";
 
-import TopbarNotification from "./TopbarNotification";
 import TopbarPrimaryAction from "./TopbarPrimaryAction";
 import TopbarSearch from "./TopbarSearch";
 import TopbarUserMenu from "./TopbarUserMenu";
@@ -13,7 +12,6 @@ export default function Topbar({
     subtitle,
     search,
     actions,
-    notification,
     primaryAction,
     user,
     userMenu,
@@ -54,8 +52,6 @@ export default function Topbar({
                 <TopbarSearch {...(search ?? {})} />
 
                 {actions}
-
-                <TopbarNotification {...(notification ?? {})} />
 
                 {primaryAction && (
                     <TopbarPrimaryAction {...primaryAction} />
