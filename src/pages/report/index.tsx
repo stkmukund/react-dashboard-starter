@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Button,
+    calculateDateRange,
     Icon,
     Table,
     TableFilters,
@@ -45,30 +46,126 @@ const BRAND_NAME_MAP: Record<string, string> = {
 
 // Normalize backend API loan record into LoanReportItem
 function normalizeApiRecord(raw: ApiLoanRecord, index: number, currentBrand: string): LoanReportItem {
-    const payload = raw.payload || {};
-    const rawName = String(payload.name || raw.name || "").trim();
-    let firstName = String(payload.first_name || payload.firstName || raw.first_name || raw.firstName || "");
-    let lastName = String(payload.last_name || payload.lastName || raw.last_name || raw.lastName || "");
+    let payload: Record<string, unknown> = (raw.payload as Record<string, unknown>) || {};
+    if (typeof payload === "string") {
+        try {
+            payload = JSON.parse(payload);
+        } catch {
+            payload = {};
+        }
+    }
+    const r = raw as Record<string, unknown>;
+
+    // Name extraction with all fallbacks (both nested in payload and top-level)
+    const rawName = String(payload.name || payload.fullName || r.name || r.fullName || "").trim();
+    let firstName = String(
+        payload.first_name ||
+        payload.firstName ||
+        payload.fname ||
+        r.first_name ||
+        r.firstName ||
+        r.fname ||
+        ""
+    ).trim();
+    let lastName = String(
+        payload.last_name ||
+        payload.lastName ||
+        payload.lname ||
+        r.last_name ||
+        r.lastName ||
+        r.lname ||
+        ""
+    ).trim();
+
     if (!firstName && rawName) {
         const parts = rawName.split(" ");
         firstName = parts[0] || "Applicant";
         lastName = parts.slice(1).join(" ") || "";
     }
 
-    const email = String(payload.email || raw.email || "—");
-    const phone = String(payload.phone || payload.phoneMobile || payload.cell || raw.phone || raw.cell || "—");
-    const address = String(payload.address || raw.address || "—");
-    const city = String(payload.city || raw.city || "—");
-    const state = String(payload.state || raw.state || "—");
-    const zipcode = String(payload.zipcode || payload.zip || raw.zipcode || raw.zip || "—");
-    const refcode = String(payload.refcode || raw.refcode || (raw.lead_id ? `REF${raw.lead_id}` : `REC-${1000 + index}`));
-    const rawLoanAmount = payload.loan_amount || payload.loanAmount || payload.requestedAmount || payload.clientEstimatedDebt || raw.loan_amount || raw.loanAmount || "0";
+    // Contact info
+    const email = String(payload.email || payload.emailAddress || r.email || r.emailAddress || "—");
+    const phone = String(
+        payload.phone ||
+        payload.phoneMobile ||
+        payload.cell ||
+        payload.mobile ||
+        payload.telephone ||
+        r.phone ||
+        r.phoneMobile ||
+        r.cell ||
+        r.mobile ||
+        "—"
+    );
+
+    // Location / Address info
+    const address = String(
+        payload.address ||
+        payload.street ||
+        payload.street_address ||
+        payload.address1 ||
+        r.address ||
+        r.street ||
+        r.street_address ||
+        r.address1 ||
+        "—"
+    );
+    const city = String(payload.city || r.city || "—");
+    const state = String(payload.state || payload.state_code || r.state || r.state_code || "—");
+    const zipcode = String(
+        payload.zipcode ||
+        payload.zip ||
+        payload.postal_code ||
+        payload.postalCode ||
+        r.zipcode ||
+        r.zip ||
+        r.postal_code ||
+        "—"
+    );
+
+    // Reference code & IDs
+    const refcode = String(
+        payload.refcode ||
+        payload.ref_code ||
+        payload.reference_code ||
+        r.refcode ||
+        r.ref_code ||
+        (r.lead_id ? `REF${r.lead_id}` : (r.id ? `REF${r.id}` : `REC-${1000 + index}`))
+    );
+
+    // Loan amount
+    const rawLoanAmount =
+        payload.loan_amount ??
+        payload.loanAmount ??
+        payload.requestedAmount ??
+        payload.requested_amount ??
+        payload.clientEstimatedDebt ??
+        payload.amount ??
+        r.loan_amount ??
+        r.loanAmount ??
+        r.requestedAmount ??
+        r.amount ??
+        "0";
     const loanAmount = typeof rawLoanAmount === "number" ? rawLoanAmount : String(rawLoanAmount || "0");
-    const brand = String(raw.brand || raw.site_name || payload.alt_source || payload.leadOrigin || currentBrand);
-    const date = String(raw.created_at?.split(" ")[0] || raw.date || "2026-08-27");
+
+    // Brand & Date
+    const brand = String(
+        r.brand ||
+        r.site_name ||
+        payload.brand ||
+        payload.site_name ||
+        payload.alt_source ||
+        payload.leadOrigin ||
+        currentBrand ||
+        ""
+    );
+    const rawDate = r.created_at || r.updated_at || r.date || payload.created_at || payload.date || "";
+    const date = String(rawDate).split(" ")[0] || "";
+
+    const id = String(r.id || r.lead_id || payload.id || payload.lead_id || `REC-${1000 + index}`);
 
     return {
-        id: String(raw.id || raw.lead_id || `REC-${1000 + index}`),
+        id,
         first_name: firstName || "Applicant",
         last_name: lastName,
         email,
@@ -109,18 +206,13 @@ export default function Report() {
     const [selectedBrand, setSelectedBrand] = useState<string | number>("riverlend");
     const [selectedState, setSelectedState] = useState<string | number>("");
     const [selectedStatus, setSelectedStatus] = useState<string | number>("");
-    const [dateRange, setDateRange] = useState<DateRange | undefined>({
-        startDate: "2026-08-25",
-        endDate: "2026-08-30",
-        preset: "today",
-        label: "Aug 25 - Aug 30, 2026",
-    });
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(() => calculateDateRange("today"));
 
     // Remote Data State
     const [dataList, setDataList] = useState<LoanReportItem[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
-    console.log(fetchError);
+    console.log("fetchError:", fetchError);
 
     // Table Control State
     const [sortKey, setSortKey] = useState<string>("first_name");
@@ -135,32 +227,62 @@ export default function Report() {
         setFetchError(null);
         try {
             const brandParam = String(selectedBrand || "riverlend");
+            const effectiveDateRange = dateRange || calculateDateRange("today");
             const response = await reportService.getValues({
                 site_name: brandParam,
-                start_date: dateRange?.startDate || "2026-08-25",
-                end_date: dateRange?.endDate || "2026-08-30",
+                start_date: effectiveDateRange.startDate,
+                end_date: effectiveDateRange.endDate,
                 page: currentPage,
                 limit: pageSize,
             });
 
             // Extract records array from various possible backend response formats
-            const rawArray: ApiLoanRecord[] =
-                (Array.isArray(response) ? response : null) ||
-                response?.data ||
-                response?.results ||
-                response?.records ||
-                response?.values ||
-                [];
+            let rawArray: ApiLoanRecord[] = [];
+            if (Array.isArray(response)) {
+                rawArray = response;
+            } else if (response && typeof response === "object") {
+                const candidate =
+                    response.data ||
+                    response.results ||
+                    response.records ||
+                    response.values ||
+                    response.items ||
+                    response.rows ||
+                    response.payload ||
+                    [];
+                if (Array.isArray(candidate)) {
+                    rawArray = candidate;
+                } else if (typeof candidate === "object" && candidate !== null) {
+                    rawArray = Object.values(candidate) as ApiLoanRecord[];
+                }
+            }
 
             if (Array.isArray(rawArray) && rawArray.length > 0) {
-                const normalized = rawArray.map((r, i) => normalizeApiRecord(r, i, brandParam));
+                const validRecords = rawArray.filter(
+                    (r) =>
+                        r &&
+                        typeof r === "object" &&
+                        !Array.isArray(r) &&
+                        (r.id !== undefined ||
+                            r.lead_id !== undefined ||
+                            r.payload !== undefined ||
+                            r.first_name !== undefined ||
+                            r.firstName !== undefined ||
+                            r.email !== undefined ||
+                            r.name !== undefined ||
+                            r.loan_amount !== undefined ||
+                            r.loanAmount !== undefined)
+                );
+                const normalized = (validRecords.length > 0 ? validRecords : rawArray).map((r, i) =>
+                    normalizeApiRecord(r, i, brandParam)
+                );
                 setDataList(normalized);
             } else {
                 setDataList([]);
             }
         } catch (err) {
-            console.warn("API call failed or blocked by CORS/network, using local dataset fallback:", err);
-            setFetchError("Live API request failed. Displaying local dataset.");
+            console.warn("API call failed:", err);
+            setFetchError("Live API request failed.");
         } finally {
             setIsLoading(false);
         }
@@ -205,8 +327,13 @@ export default function Report() {
                 item.address.toLowerCase().includes(query) ||
                 item.loan_amount.toString().includes(query);
 
-            // Brand Filter
-            const matchesBrand = !selectedBrand || item.brand === selectedBrand;
+            // Brand Filter (tolerant match in case API response has full name or lowercase code)
+            const matchesBrand =
+                !selectedBrand ||
+                !item.brand ||
+                item.brand.toLowerCase() === String(selectedBrand).toLowerCase() ||
+                item.brand.toLowerCase() === (BRAND_NAME_MAP[String(selectedBrand)] || "").toLowerCase() ||
+                (BRAND_NAME_MAP[item.brand.toLowerCase()] || "").toLowerCase() === (BRAND_NAME_MAP[String(selectedBrand)] || "").toLowerCase();
 
             // State Filter
             const matchesState = !selectedState || item.state === selectedState;
