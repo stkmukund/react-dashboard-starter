@@ -192,7 +192,10 @@ function formatPhoneNumber(phone: string): string {
 
 // Helper to format currency
 function formatCurrency(amount: string | number): string {
-    const num = typeof amount === "number" ? amount : Number.parseFloat(amount) || 0;
+    const num =
+        typeof amount === "number"
+            ? amount
+            : Number.parseFloat(String(amount || "0").replace(/[$,\s]/g, "")) || 0;
     return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",

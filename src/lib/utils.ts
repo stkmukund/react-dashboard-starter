@@ -59,3 +59,16 @@ export const formatDueDate = (date: Date) => {
   if (isTomorrow(d)) return { label: "Tomorrow", overdue: false };
   return { label: format(d, "MMM d"), overdue: isPast(d) };
 };
+
+// Reliably parses currency/numeric amounts (handles numbers, formatted strings like "23,500" or "$23,500.00").
+export function parseNumericAmount(rawAmount: unknown): number {
+  if (typeof rawAmount === "number") {
+    return Number.isFinite(rawAmount) ? rawAmount : 0;
+  }
+  if (typeof rawAmount === "string") {
+    const clean = rawAmount.replace(/[$,\s]/g, "");
+    const parsed = Number.parseFloat(clean);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}

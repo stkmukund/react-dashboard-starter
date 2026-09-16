@@ -10,6 +10,7 @@ import {
     type TableHeader,
 } from "../../components/ui";
 import { reportService, type ApiLoanRecord } from "../../services";
+import { parseNumericAmount } from "../../lib/utils";
 
 interface KpiData {
     title: string;
@@ -85,7 +86,7 @@ export default function DashboardPage() {
                 item.loan_amount ||
                 item.loanAmount ||
                 0;
-            const num = typeof rawAmount === "number" ? rawAmount : Number.parseFloat(String(rawAmount)) || 0;
+            const num = parseNumericAmount(rawAmount);
             return acc + num;
         }, 0);
         const avgAmount = totalCount > 0 ? totalAmount / totalCount : 0;
@@ -149,7 +150,7 @@ export default function DashboardPage() {
                     row.loan_amount ||
                     row.loanAmount ||
                     0;
-                const amt = typeof rawAmount === "number" ? rawAmount : Number.parseFloat(String(rawAmount)) || 0;
+                const amt = parseNumericAmount(rawAmount);
                 const rawDate = String(row.created_at?.split(" ")[0] || row.date || "");
 
                 let targetBucketIndex = -1;
@@ -294,9 +295,8 @@ export default function DashboardPage() {
                 row.loan_amount ||
                 row.loanAmount ||
                 0;
-            const amount = typeof rawAmount === "number"
-                ? `$${rawAmount.toLocaleString()}`
-                : `$${Number.parseFloat(String(rawAmount || 0)).toLocaleString()}`;
+            const numAmount = parseNumericAmount(rawAmount);
+            const amount = `$${numAmount.toLocaleString()}`;
 
             const email = payload.email || row.email || "—";
             const phone = payload.phone || payload.phoneMobile || payload.cell || row.phone || row.cell || "—";
