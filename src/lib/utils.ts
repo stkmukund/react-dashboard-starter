@@ -72,3 +72,24 @@ export function parseNumericAmount(rawAmount: unknown): number {
   }
   return 0;
 }
+
+export interface BrandOption {
+  label: string;
+  value: string;
+}
+
+export const BRAND_OPTIONS: BrandOption[] = [
+  { label: "Riverlend", value: "riverlend" },
+  { label: "Rapid Trust Capital", value: "rapidtrust" },
+  { label: "Ridge View Loans", value: "ridgeviewloans" },
+  { label: "Universal Lending LLC", value: "universallending" },
+  { label: "Bright Relief", value: "brightrelief" },
+];
+
+export const BRAND_NAME_MAP: Record<string, string> = {
+  riverlend: "Riverlend",
+  rapidtrust: "Rapid Trust Capital",
+  ridgeviewloans: "Ridge View Loans",
+  universallending: "Universal Lending LLC",
+  brightrelief: "Bright Relief",
+};

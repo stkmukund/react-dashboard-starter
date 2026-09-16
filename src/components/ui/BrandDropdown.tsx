@@ -1,26 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Icon from "./Icon";
-
-export interface BrandOption {
-  label: string;
-  value: string;
-}
-
-export const BRAND_OPTIONS: BrandOption[] = [
-  { label: "Riverlend", value: "riverlend" },
-  { label: "Rapid Trust Capital", value: "rapidtrust" },
-  { label: "Ridge View Loans", value: "ridgeviewloans" },
-  { label: "Universal Lending LLC", value: "universallending" },
-  { label: "Bright Relief", value: "brightrelief" },
-];
-
-export const BRAND_NAME_MAP: Record<string, string> = {
-  riverlend: "Riverlend",
-  rapidtrust: "Rapid Trust Capital",
-  ridgeviewloans: "Ridge View Loans",
-  universallending: "Universal Lending LLC",
-  brightrelief: "Bright Relief",
-};
+import { BRAND_OPTIONS, type BrandOption } from "../../lib/utils";
 
 export interface BrandDropdownProps {
   value: string;
@@ -106,8 +86,8 @@ export const BrandDropdown: React.FC<BrandDropdownProps> = ({
                   setIsOpen(false);
                 }}
                 className={`w-full flex items-center justify-between px-4 py-2 text-xs font-medium transition-colors ${!value
-                    ? "bg-primary/10 text-primary font-semibold"
-                    : "text-foreground hover:bg-surface-2"
+                  ? "bg-primary/10 text-primary font-semibold"
+                  : "text-foreground hover:bg-surface-2"
                   }`}
               >
                 <span>{placeholder}</span>
@@ -125,8 +105,8 @@ export const BrandDropdown: React.FC<BrandDropdownProps> = ({
                     setIsOpen(false);
                   }}
                   className={`w-full flex items-center justify-between px-4 py-2 text-xs font-medium transition-colors ${isSelected
-                      ? "bg-primary/10 text-primary font-semibold"
-                      : "text-foreground hover:bg-surface-2"
+                    ? "bg-primary/10 text-primary font-semibold"
+                    : "text-foreground hover:bg-surface-2"
                     }`}
                 >
                   <span className="truncate">{brand.label}</span>
