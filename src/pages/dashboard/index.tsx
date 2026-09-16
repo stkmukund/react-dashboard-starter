@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Button,
+    calculateDateRange,
     Icon,
     DateRangeDropdown,
     Table,
@@ -33,12 +34,7 @@ const BRAND_OPTIONS = [
 
 export default function DashboardPage() {
     const [selectedBrand, setSelectedBrand] = useState("riverlend");
-    const [dateRange, setDateRange] = useState<DateRange>({
-        startDate: "2026-08-01",
-        endDate: "2026-08-30",
-        preset: "this_month",
-        label: "This Month",
-    });
+    const [dateRange, setDateRange] = useState<DateRange>(() => calculateDateRange("this_month"));
     const [hoveredKpi, setHoveredKpi] = useState<number | null>(null);
     const [hoveredPointIdx, setHoveredPointIdx] = useState<number | null>(null);
     const [apiData, setApiData] = useState<ApiLoanRecord[]>([]);
@@ -50,8 +46,8 @@ export default function DashboardPage() {
         try {
             const response = await reportService.getValues({
                 site_name: selectedBrand,
-                start_date: dateRange?.startDate || "2026-08-01",
-                end_date: dateRange?.endDate || "2026-08-30",
+                start_date: dateRange?.startDate,
+                end_date: dateRange?.endDate,
                 page: 1,
                 limit: 100,
             });
@@ -109,8 +105,8 @@ export default function DashboardPage() {
 
     // Dynamic Chart Data Grouped By Date intervals based on dateRange & apiData
     const chartSeries = useMemo(() => {
-        const startDateStr = dateRange?.startDate || "2026-08-01";
-        const endDateStr = dateRange?.endDate || "2026-08-30";
+        const startDateStr = dateRange?.startDate;
+        const endDateStr = dateRange?.endDate;
 
         const start = new Date(startDateStr);
         const end = new Date(endDateStr);
@@ -305,7 +301,7 @@ export default function DashboardPage() {
             const email = payload.email || row.email || "—";
             const phone = payload.phone || payload.phoneMobile || payload.cell || row.phone || row.cell || "—";
             const refcode = payload.refcode || row.refcode || (row.lead_id ? `REF${row.lead_id}` : "");
-            const date = String(row.created_at?.split(" ")[0] || row.date || "2026-08-27");
+            const date = String(row.created_at?.split(" ")[0] || row.date);
 
             return [
                 {
@@ -366,6 +362,7 @@ export default function DashboardPage() {
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
+
                     {/* Brand Selector */}
                     <div className="relative inline-block">
                         <select
@@ -388,7 +385,19 @@ export default function DashboardPage() {
                     {/* Date Range Dropdown */}
                     <DateRangeDropdown
                         defaultPreset="this_month"
-                        onDateRangeChange={(range) => setDateRange(range)}
+                        onDateRangeChange={(range) => {
+                            setDateRange((prev) => {
+                                if (
+                                    prev &&
+                                    prev.startDate === range.startDate &&
+                                    prev.endDate === range.endDate &&
+                                    prev.preset === range.preset
+                                ) {
+                                    return prev;
+                                }
+                                return range;
+                            });
+                        }}
                     />
 
                     <Button
