@@ -10,6 +10,7 @@ import {
     type TableHeader,
 } from "../../components/ui";
 import { reportService, type ApiLoanRecord } from "../../services";
+import { parseNumericAmount } from "../../lib/utils";
 
 export interface LoanReportItem {
     id: string;
@@ -192,10 +193,7 @@ function formatPhoneNumber(phone: string): string {
 
 // Helper to format currency
 function formatCurrency(amount: string | number): string {
-    const num =
-        typeof amount === "number"
-            ? amount
-            : Number.parseFloat(String(amount || "0").replace(/[$,\s]/g, "")) || 0;
+    const num = parseNumericAmount(amount);
     return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -354,8 +352,8 @@ export default function Report() {
             let valB: string | number = (b as unknown as Record<string, string | number>)[sortKey] ?? "";
 
             if (sortKey === "loan_amount") {
-                const numA = typeof valA === "number" ? valA : Number.parseFloat(valA) || 0;
-                const numB = typeof valB === "number" ? valB : Number.parseFloat(valB) || 0;
+                const numA = parseNumericAmount(valA);
+                const numB = parseNumericAmount(valB);
                 return sortDirection === "asc" ? numA - numB : numB - numA;
             }
 
@@ -441,7 +439,7 @@ export default function Report() {
     // Total Loan Calculation for filtered data
     const totalLoanAmount = useMemo(() => {
         return filteredAndSortedData.reduce((acc, item) => {
-            const num = typeof item.loan_amount === "number" ? item.loan_amount : Number.parseFloat(item.loan_amount) || 0;
+            const num = parseNumericAmount(item.loan_amount);
             return acc + num;
         }, 0);
     }, [filteredAndSortedData]);
