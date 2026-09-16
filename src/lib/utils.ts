@@ -84,6 +84,11 @@ export const BRAND_OPTIONS: BrandOption[] = [
   { label: "Ridge View Loans", value: "ridgeviewloans" },
   { label: "Universal Lending LLC", value: "universallending" },
   { label: "Bright Relief", value: "brightrelief" },
+  { label: "Pro Rate Loans", value: "prorateloans" },
+  { label: "Gofi Loans", value: "gofiloans" },
+  { label: "App My Loan", value: "appmyloan" },
+  { label: "Boardwalk Loans", value: "boardwalkloans" },
+  { label: "Orgin Loans", value: "orginloans" },
 ];
 
 export const BRAND_NAME_MAP: Record<string, string> = {
@@ -92,4 +97,9 @@ export const BRAND_NAME_MAP: Record<string, string> = {
   ridgeviewloans: "Ridge View Loans",
   universallending: "Universal Lending LLC",
   brightrelief: "Bright Relief",
+  prorateloans: "Pro Rate Loans",
+  gofiloans: "Gofi Loans",
+  appmyloan: "App My Loan",
+  boardwalkloans: "Boardwalk Loans",
+  orginloans: "Orgin Loans",
 };
