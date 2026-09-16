@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     Button,
     calculateDateRange,
@@ -35,11 +35,27 @@ const BRAND_OPTIONS = [
 
 export default function DashboardPage() {
     const [selectedBrand, setSelectedBrand] = useState("riverlend");
+    const [isBrandDropdownOpen, setIsBrandDropdownOpen] = useState(false);
+    const brandDropdownRef = useRef<HTMLDivElement>(null);
     const [dateRange, setDateRange] = useState<DateRange>(() => calculateDateRange("this_month"));
     const [hoveredKpi, setHoveredKpi] = useState<number | null>(null);
     const [hoveredPointIdx, setHoveredPointIdx] = useState<number | null>(null);
     const [apiData, setApiData] = useState<ApiLoanRecord[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Outside click detection for brand dropdown
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (brandDropdownRef.current && !brandDropdownRef.current.contains(e.target as Node)) {
+                setIsBrandDropdownOpen(false);
+            }
+        };
+
+        if (isBrandDropdownOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isBrandDropdownOpen]);
 
     // Fetch dashboard overview data using the getValues API
     const fetchDashboardData = useCallback(async () => {
@@ -363,23 +379,62 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
 
-                    {/* Brand Selector */}
-                    <div className="relative inline-block">
-                        <select
-                            value={selectedBrand}
-                            aria-label="Select brand"
-                            onChange={(e) => setSelectedBrand(e.target.value)}
-                            className="h-9 cursor-pointer appearance-none rounded-xl border border-line bg-surface py-1 pl-3.5 pr-8 text-xs font-semibold text-ink shadow-[var(--shadow-card)] outline-none hover:bg-surface-2 focus:border-brand-500"
+                    {/* Brand Selector Dropdown */}
+                    <div ref={brandDropdownRef} className="relative inline-block">
+                        <button
+                            type="button"
+                            onClick={() => setIsBrandDropdownOpen(!isBrandDropdownOpen)}
+                            className="inline-flex items-center justify-between gap-2.5 px-3.5 py-2 bg-card border border-border rounded-xl text-sm font-medium text-foreground hover:bg-surface-2 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-(--shadow-card) transition-all min-w-44"
+                            aria-expanded={isBrandDropdownOpen}
+                            aria-haspopup="true"
                         >
-                            {BRAND_OPTIONS.map((brand) => (
-                                <option key={brand.value} value={brand.value}>
-                                    {brand.label}
-                                </option>
-                            ))}
-                        </select>
-                        <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-faint">
-                            <Icon name="expand_more" size={16} />
-                        </span>
+                            <div className="flex items-center gap-2 text-muted-foreground truncate">
+                                <Icon name="business" size={16} className="text-primary shrink-0" />
+                                <span className="text-xs font-semibold text-foreground truncate">
+                                    {BRAND_OPTIONS.find((b) => b.value === selectedBrand)?.label || "Select Brand"}
+                                </span>
+                            </div>
+                            <Icon
+                                name="keyboard_arrow_down"
+                                size={16}
+                                className={`text-muted-foreground transition-transform duration-200 shrink-0 ${
+                                    isBrandDropdownOpen ? "rotate-180" : ""
+                                }`}
+                            />
+                        </button>
+
+                        {isBrandDropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-56 bg-card rounded-2xl shadow-(--shadow-lift) border border-border z-50 animate-in overflow-hidden">
+                                <div className="px-4 py-2.5 border-b border-border bg-surface-2/60">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                                        Select Brand
+                                    </span>
+                                </div>
+                                <div className="py-1.5 max-h-60 overflow-y-auto">
+                                    {BRAND_OPTIONS.map((brand) => {
+                                        const isSelected = selectedBrand === brand.value;
+                                        return (
+                                            <button
+                                                key={brand.value}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedBrand(brand.value);
+                                                    setIsBrandDropdownOpen(false);
+                                                }}
+                                                className={`w-full flex items-center justify-between px-4 py-2 text-xs font-medium transition-colors ${
+                                                    isSelected
+                                                        ? "bg-primary/10 text-primary font-semibold"
+                                                        : "text-foreground hover:bg-surface-2"
+                                                }`}
+                                            >
+                                                <span>{brand.label}</span>
+                                                {isSelected && <Icon name="check" size={14} className="text-primary" />}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Date Range Dropdown */}
