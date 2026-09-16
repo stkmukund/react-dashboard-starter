@@ -437,7 +437,7 @@ export default function DashboardPage() {
                             >
                                 <Icon name={card.icon} filled size={20} />
                             </div>
-                            <span
+                            {/* <span
                                 className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${card.isPositive
                                     ? "bg-emerald-50 text-emerald-700"
                                     : "bg-rose-50 text-rose-700"
@@ -449,7 +449,7 @@ export default function DashboardPage() {
                                     className={card.isPositive ? "text-emerald-600" : "text-rose-600"}
                                 />
                                 {card.change}
-                            </span>
+                            </span> */}
                         </div>
 
                         {/* Card Metric Body */}
