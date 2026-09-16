@@ -1,7 +1,25 @@
 import React, { useState, useEffect } from "react";
-import type { TableFiltersProps } from "./types";
+import type { FilterConfig, TableFiltersProps } from "./types";
 import DateRangeDropdown from "./DateRangeDropdown";
-import { Icon, Spinner } from "../ui";
+import { Icon, Spinner, BrandDropdown } from "../ui";
+
+const DropdownFilter: React.FC<{ filter: FilterConfig }> = ({ filter }) => {
+  // If this is a brand filter or custom filter, reuse BrandDropdown for consistent UI
+  return (
+    <BrandDropdown
+      value={String(filter.value ?? "")}
+      onChange={(val) => filter.onChange(val)}
+      options={filter.options.map((opt) => ({
+        label: opt.label,
+        value: String(opt.value),
+      }))}
+      placeholder={filter.placeholder}
+      title={`Select ${filter.label}`}
+      iconName={filter.id === "brand" ? "business" : "tune"}
+      className="min-w-36"
+    />
+  );
+};
 
 export const TableFilters: React.FC<TableFiltersProps> = ({
   searchValue = "",
@@ -87,8 +105,6 @@ export const TableFilters: React.FC<TableFiltersProps> = ({
           </div>
         )}
 
-
-
         {/* Reset / Clear Button */}
         {hasActiveFilters && onReset && (
           <button
@@ -103,27 +119,10 @@ export const TableFilters: React.FC<TableFiltersProps> = ({
       </div>
 
       {/* Right side: Date Range Picker & Custom Actions */}
-      <div className="flex items-center gap-2.5 self-end md:self-auto shrink-0">
-
+      <div className="flex items-center gap-2.5 self-end md:self-auto shrink-0 flex-wrap">
         {/* Custom Dropdown Filters */}
         {filters.map((filter) => (
-          <div key={filter.id} className="relative min-w-32.5">
-            <select
-              value={filter.value ?? ""}
-              onChange={(e) => filter.onChange(e.target.value)}
-              className="w-full appearance-none px-3.5 py-2 pr-8 border border-border rounded-xl text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all hover:bg-surface-2 shadow-(--shadow-card)"
-            >
-              {/* <option value="">{filter.placeholder || `All ${filter.label}`}</option> */}
-              {filter.options.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-muted-foreground">
-              <Icon name="keyboard_arrow_down" size={16} />
-            </div>
-          </div>
+          <DropdownFilter key={filter.id} filter={filter} />
         ))}
 
         {dateRange && (

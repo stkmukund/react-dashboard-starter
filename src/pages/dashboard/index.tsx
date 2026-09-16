@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Button,
     calculateDateRange,
+    BrandDropdown,
     Icon,
     DateRangeDropdown,
     Table,
     type DateRange,
     type TableCell,
     type TableHeader,
+    BRAND_OPTIONS,
 } from "../../components/ui";
 import { reportService, type ApiLoanRecord } from "../../services";
 import { parseNumericAmount } from "../../lib/utils";
@@ -25,37 +27,13 @@ interface KpiData {
     sparklineArea: string;
 }
 
-const BRAND_OPTIONS = [
-    { label: "Riverlend", value: "riverlend" },
-    { label: "Rapid Trust Capital", value: "rapidtrust" },
-    { label: "Ridge View Loans", value: "ridgeviewloans" },
-    { label: "Universal Lending LLC", value: "universallending" },
-    { label: "Bright Relief", value: "brightrelief" },
-];
-
 export default function DashboardPage() {
     const [selectedBrand, setSelectedBrand] = useState("riverlend");
-    const [isBrandDropdownOpen, setIsBrandDropdownOpen] = useState(false);
-    const brandDropdownRef = useRef<HTMLDivElement>(null);
     const [dateRange, setDateRange] = useState<DateRange>(() => calculateDateRange("this_month"));
     const [hoveredKpi, setHoveredKpi] = useState<number | null>(null);
     const [hoveredPointIdx, setHoveredPointIdx] = useState<number | null>(null);
     const [apiData, setApiData] = useState<ApiLoanRecord[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-
-    // Outside click detection for brand dropdown
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (brandDropdownRef.current && !brandDropdownRef.current.contains(e.target as Node)) {
-                setIsBrandDropdownOpen(false);
-            }
-        };
-
-        if (isBrandDropdownOpen) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [isBrandDropdownOpen]);
 
     // Fetch dashboard overview data using the getValues API
     const fetchDashboardData = useCallback(async () => {
@@ -380,62 +358,10 @@ export default function DashboardPage() {
                 <div className="flex flex-wrap items-center gap-3">
 
                     {/* Brand Selector Dropdown */}
-                    <div ref={brandDropdownRef} className="relative inline-block">
-                        <button
-                            type="button"
-                            onClick={() => setIsBrandDropdownOpen(!isBrandDropdownOpen)}
-                            className="inline-flex items-center justify-between gap-2.5 px-3.5 py-2 bg-card border border-border rounded-xl text-sm font-medium text-foreground hover:bg-surface-2 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-(--shadow-card) transition-all min-w-44"
-                            aria-expanded={isBrandDropdownOpen}
-                            aria-haspopup="true"
-                        >
-                            <div className="flex items-center gap-2 text-muted-foreground truncate">
-                                <Icon name="business" size={16} className="text-primary shrink-0" />
-                                <span className="text-xs font-semibold text-foreground truncate">
-                                    {BRAND_OPTIONS.find((b) => b.value === selectedBrand)?.label || "Select Brand"}
-                                </span>
-                            </div>
-                            <Icon
-                                name="keyboard_arrow_down"
-                                size={16}
-                                className={`text-muted-foreground transition-transform duration-200 shrink-0 ${
-                                    isBrandDropdownOpen ? "rotate-180" : ""
-                                }`}
-                            />
-                        </button>
-
-                        {isBrandDropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-56 bg-card rounded-2xl shadow-(--shadow-lift) border border-border z-50 animate-in overflow-hidden">
-                                <div className="px-4 py-2.5 border-b border-border bg-surface-2/60">
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                                        Select Brand
-                                    </span>
-                                </div>
-                                <div className="py-1.5 max-h-60 overflow-y-auto">
-                                    {BRAND_OPTIONS.map((brand) => {
-                                        const isSelected = selectedBrand === brand.value;
-                                        return (
-                                            <button
-                                                key={brand.value}
-                                                type="button"
-                                                onClick={() => {
-                                                    setSelectedBrand(brand.value);
-                                                    setIsBrandDropdownOpen(false);
-                                                }}
-                                                className={`w-full flex items-center justify-between px-4 py-2 text-xs font-medium transition-colors ${
-                                                    isSelected
-                                                        ? "bg-primary/10 text-primary font-semibold"
-                                                        : "text-foreground hover:bg-surface-2"
-                                                }`}
-                                            >
-                                                <span>{brand.label}</span>
-                                                {isSelected && <Icon name="check" size={14} className="text-primary" />}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    <BrandDropdown
+                        value={selectedBrand}
+                        onChange={(val) => setSelectedBrand(val)}
+                    />
 
                     {/* Date Range Dropdown */}
                     <DateRangeDropdown

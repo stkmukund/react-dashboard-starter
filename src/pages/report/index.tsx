@@ -5,6 +5,8 @@ import {
     Icon,
     Table,
     TableFilters,
+    BRAND_OPTIONS,
+    BRAND_NAME_MAP,
     type DateRange,
     type TableCell,
     type TableHeader,
@@ -28,22 +30,6 @@ export interface LoanReportItem {
     status?: "APPROVED" | "PENDING" | "PROCESSING" | "COMPLETED" | "WARNING" | "FAILED" | string;
     date?: string;
 }
-
-const BRAND_OPTIONS = [
-    { label: "Riverlend", value: "riverlend" },
-    { label: "Rapid Trust Capital", value: "rapidtrust" },
-    { label: "Ridge View Loans", value: "ridgeviewloans" },
-    { label: "Universal Lending LLC", value: "universallending" },
-    { label: "Bright Relief", value: "brightrelief" },
-];
-
-const BRAND_NAME_MAP: Record<string, string> = {
-    riverlend: "Riverlend",
-    rapidtrust: "Rapid Trust Capital",
-    ridgeviewloans: "Ridge View Loans",
-    universallending: "Universal Lending LLC",
-    brightrelief: "Bright Relief",
-};
 
 // Normalize backend API loan record into LoanReportItem
 function normalizeApiRecord(raw: ApiLoanRecord, index: number, currentBrand: string): LoanReportItem {
@@ -633,7 +619,7 @@ export default function Report() {
                 }}
                 onReset={() => {
                     setSearchValue("");
-                    setSelectedBrand("");
+                    setSelectedBrand("riverlend");
                     setSelectedState("");
                     setSelectedStatus("");
                     setDateRange(undefined);
