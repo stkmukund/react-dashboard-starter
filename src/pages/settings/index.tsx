@@ -45,29 +45,29 @@ const SettingsCard = ({ title, description, children }: SettingsCardProps) => (
     <section className="card rounded-3xl p-6 shadow-(--shadow-card)">
         <h3 className="font-display text-sm font-semibold tracking-tight text-foreground">{title}</h3>
         {description && <p className="mt-1 text-xs text-muted-foreground">{description}</p>}
-        <div className="mt-5">{children}</div>
+        <div>{children}</div>
     </section>
 );
 
-interface MetricProps {
-    icon: string;
-    label: string;
-    value: string | number;
-    tint: string;
-}
+// interface MetricProps {
+//     icon: string;
+//     label: string;
+//     value: string | number;
+//     tint: string;
+// }
 
-const Metric = ({ icon, label, value, tint }: MetricProps) => (
-    <div className="rounded-2xl bg-surface-2/60 p-4">
-        <div
-            className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl"
-            style={{ backgroundColor: `color-mix(in srgb, ${tint} 12%, transparent)`, color: tint }}
-        >
-            <Icon name={icon} size={18} />
-        </div>
-        <p className="font-display text-2xl font-semibold tracking-tight tabular text-foreground">{value}</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{label}</p>
-    </div>
-);
+// const Metric = ({ icon, label, value, tint }: MetricProps) => (
+//     <div className="rounded-2xl bg-surface-2/60 p-4">
+//         <div
+//             className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl"
+//             style={{ backgroundColor: `color-mix(in srgb, ${tint} 12%, transparent)`, color: tint }}
+//         >
+//             <Icon name={icon} size={18} />
+//         </div>
+//         <p className="font-display text-2xl font-semibold tracking-tight tabular text-foreground">{value}</p>
+//         <p className="mt-0.5 text-xs text-muted-foreground">{label}</p>
+//     </div>
+// );
 
 export default function SettingsPage() {
     const { user, logout } = useAuth();
@@ -98,7 +98,7 @@ export default function SettingsPage() {
         <div className="p-6">
             <div className="mx-auto max-w-3xl space-y-5">
                 {/* Profile */}
-                <SettingsCard title="Profile" description="How you appear across your workspace.">
+                <SettingsCard title="" description="">
                     <div className="flex items-center gap-4">
                         <Avatar
                             name={user?.name || "User"}
@@ -117,13 +117,13 @@ export default function SettingsPage() {
                 </SettingsCard>
 
                 {/* Workspace */}
-                <SettingsCard title="Workspace" description="Your activity at a glance.">
+                {/* <SettingsCard title="Workspace" description="Your activity at a glance.">
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <Metric icon="dashboard" label="Boards" value="12" tint="var(--color-primary)" />
                         <Metric icon="task_alt" label="Tasks" value="48" tint="var(--color-info)" />
                         <Metric icon="group" label="People" value="6" tint="var(--color-success)" />
                     </div>
-                </SettingsCard>
+                </SettingsCard> */}
 
                 {/* Preferences */}
                 <SettingsCard title="Preferences" description="Saved to this browser.">
