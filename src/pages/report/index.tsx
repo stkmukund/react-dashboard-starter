@@ -13,7 +13,7 @@ import {
     type TableHeader,
 } from "../../components/ui";
 import { reportService, type ApiLoanRecord } from "../../services";
-import { cn, parseNumericAmount } from "../../lib/utils";
+import { parseNumericAmount } from "../../lib/utils";
 
 export interface LoanReportItem {
     id: string;
