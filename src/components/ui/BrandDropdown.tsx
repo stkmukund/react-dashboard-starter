@@ -69,7 +69,7 @@ export const BrandDropdown: React.FC<BrandDropdownProps> = ({
 
       {isOpen && (
         <div
-          className={`absolute mt-2 w-56 bg-card rounded-2xl shadow-(--shadow-lift) border border-border z-50 animate-in overflow-hidden ${align === "right" ? "right-0" : "left-0"
+          className={`absolute mt-2 w-56 bg-card rounded-2xl shadow-(--shadow-lift) border border-border z-50 animate-in overflow-hidden ${align === "right" ? "" : "left-0"
             }`}
         >
           <div className="px-4 py-2.5 border-b border-border bg-surface-2/60">

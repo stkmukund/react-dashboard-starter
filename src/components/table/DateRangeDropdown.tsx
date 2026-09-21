@@ -256,7 +256,7 @@ export const DateRangeDropdown = forwardRef<DateRangeDropdownRef, DateRangeDropd
 
         {isOpen && (
           <div
-            className={`absolute mt-2 w-72 bg-card rounded-2xl shadow-(--shadow-lift) border border-border z-50 animate-in overflow-hidden ${align === "right" ? "right-0" : "left-0"
+            className={`absolute mt-2 w-72 bg-card rounded-2xl shadow-(--shadow-lift) border border-border z-50 animate-in overflow-hidden ${align === "right" ? "" : "left-0"
               }`}
           >
             {!showCustomPicker ? (
