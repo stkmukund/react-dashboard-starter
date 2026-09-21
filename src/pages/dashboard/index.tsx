@@ -12,7 +12,43 @@ import {
     BRAND_OPTIONS,
 } from "../../components/ui";
 import { reportService, type ApiLoanRecord } from "../../services";
-import { parseNumericAmount } from "../../lib/utils";
+import { parseNumericAmount, relativeTime } from "../../lib/utils";
+
+/**
+ * Robust parser for backend timestamps (e.g. "2026-09-17 02:56:02", "2026-09-17T02:56:02", "2026-09-17")
+ * Avoiding JavaScript timezone offset bugs.
+ */
+function parseApiDateTime(rawDateStr?: unknown): Date | null {
+    if (!rawDateStr) return null;
+    const cleanStr = String(rawDateStr).trim();
+    if (!cleanStr) return null;
+
+    // Pattern: YYYY-MM-DD HH:mm:ss or YYYY-MM-DDTHH:mm:ss
+    const match = cleanStr.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})/);
+    if (match) {
+        const [, y, m, d, hh, mm, ss] = match.map(Number);
+        return new Date(y, m - 1, d, hh, mm, ss);
+    }
+
+    // Pattern: YYYY-MM-DD
+    const dateOnlyMatch = cleanStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (dateOnlyMatch) {
+        const [, y, m, d] = dateOnlyMatch.map(Number);
+        return new Date(y, m - 1, d, 0, 0, 0);
+    }
+
+    const fallback = new Date(cleanStr);
+    return isNaN(fallback.getTime()) ? null : fallback;
+}
+
+function parseLocalDate(dateStr?: string): Date {
+    if (!dateStr) return new Date();
+    const parts = dateStr.split("-").map(Number);
+    if (parts.length === 3 && !isNaN(parts[0]) && !isNaN(parts[1]) && !isNaN(parts[2])) {
+        return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0, 0);
+    }
+    return new Date(dateStr);
+}
 
 interface KpiData {
     title: string;
@@ -103,39 +139,106 @@ export default function DashboardPage() {
         const startDateStr = dateRange?.startDate;
         const endDateStr = dateRange?.endDate;
 
-        const start = new Date(startDateStr);
-        const end = new Date(endDateStr);
-        const diffDays = Math.max(1, Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+        const start = parseLocalDate(startDateStr);
+        const end = parseLocalDate(endDateStr);
+        // Total day count inclusive
+        const diffDays = Math.max(1, Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1);
 
-        // Determine bucket size and count
-        const bucketCount = Math.min(Math.max(diffDays + 1, 5), 12);
         const buckets: {
             dateKey: string;
             label: string;
             volume: number;
             submissions: number;
+            startMs: number;
+            endMs: number;
         }[] = [];
 
-        for (let i = 0; i < bucketCount; i++) {
-            const bucketDate = new Date(start.getTime() + (diffDays / (bucketCount - 1 || 1)) * i * (1000 * 60 * 60 * 24));
-            const y = bucketDate.getFullYear();
-            const m = String(bucketDate.getMonth() + 1).padStart(2, "0");
-            const d = String(bucketDate.getDate()).padStart(2, "0");
+        if (diffDays === 1) {
+            // Single-day view (e.g. "today" or "yesterday"): 8 intervals of 3 hours each
+            const intervals = [
+                { h: 0, label: "12 AM" },
+                { h: 3, label: "3 AM" },
+                { h: 6, label: "6 AM" },
+                { h: 9, label: "9 AM" },
+                { h: 12, label: "12 PM" },
+                { h: 15, label: "3 PM" },
+                { h: 18, label: "6 PM" },
+                { h: 21, label: "9 PM" },
+            ];
+            const y = start.getFullYear();
+            const m = String(start.getMonth() + 1).padStart(2, "0");
+            const d = String(start.getDate()).padStart(2, "0");
             const dateKey = `${y}-${m}-${d}`;
-            const monthName = bucketDate.toLocaleString("en-US", { month: "short" });
-            const dayNum = bucketDate.getDate();
 
-            buckets.push({
-                dateKey,
-                label: `${monthName} ${dayNum}`,
-                volume: 0,
-                submissions: 0,
+            intervals.forEach((inv, i) => {
+                const startMs = new Date(y, start.getMonth(), start.getDate(), inv.h, 0, 0).getTime();
+                const endMs = i === intervals.length - 1
+                    ? new Date(y, start.getMonth(), start.getDate(), 23, 59, 59).getTime()
+                    : new Date(y, start.getMonth(), start.getDate(), inv.h + 3, 0, 0).getTime();
+
+                buckets.push({
+                    dateKey: `${dateKey} ${inv.label}`,
+                    label: inv.label,
+                    volume: 0,
+                    submissions: 0,
+                    startMs,
+                    endMs,
+                });
             });
+        } else if (diffDays <= 31) {
+            // Up to 31 days (e.g. "this_month", "last_30_days", "last_7_days"): exactly 1 bucket per day
+            for (let i = 0; i < diffDays; i++) {
+                const bucketDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+                const y = bucketDate.getFullYear();
+                const m = String(bucketDate.getMonth() + 1).padStart(2, "0");
+                const d = String(bucketDate.getDate()).padStart(2, "0");
+                const dateKey = `${y}-${m}-${d}`;
+                const monthName = bucketDate.toLocaleString("en-US", { month: "short" });
+                const dayNum = bucketDate.getDate();
+
+                const startMs = new Date(y, bucketDate.getMonth(), bucketDate.getDate(), 0, 0, 0).getTime();
+                const endMs = new Date(y, bucketDate.getMonth(), bucketDate.getDate(), 23, 59, 59).getTime();
+
+                buckets.push({
+                    dateKey,
+                    label: `${monthName} ${dayNum}`,
+                    volume: 0,
+                    submissions: 0,
+                    startMs,
+                    endMs,
+                });
+            }
+        } else {
+            // Multi-month ranges (> 31 days): 12 evenly spaced milestone buckets
+            const bucketCount = 12;
+            const totalMs = end.getTime() - start.getTime();
+            for (let i = 0; i < bucketCount; i++) {
+                const bucketDate = new Date(start.getTime() + (totalMs / (bucketCount - 1 || 1)) * i);
+                const y = bucketDate.getFullYear();
+                const m = String(bucketDate.getMonth() + 1).padStart(2, "0");
+                const d = String(bucketDate.getDate()).padStart(2, "0");
+                const dateKey = `${y}-${m}-${d}`;
+                const monthName = bucketDate.toLocaleString("en-US", { month: "short" });
+                const dayNum = bucketDate.getDate();
+
+                const stepMs = totalMs / bucketCount;
+                const startMs = start.getTime() + stepMs * i;
+                const endMs = start.getTime() + stepMs * (i + 1);
+
+                buckets.push({
+                    dateKey,
+                    label: `${monthName} ${dayNum}`,
+                    volume: 0,
+                    submissions: 0,
+                    startMs,
+                    endMs,
+                });
+            }
         }
 
-        // Aggregate apiData into matching or nearest buckets
-        if (apiData.length > 0) {
-            apiData.forEach((row, idx) => {
+        // Aggregate apiData into accurate buckets based on when each record was created
+        if (apiData.length > 0 && buckets.length > 0) {
+            apiData.forEach((row) => {
                 const rawAmount =
                     row.payload?.loan_amount ||
                     row.payload?.loanAmount ||
@@ -145,19 +248,44 @@ export default function DashboardPage() {
                     row.loanAmount ||
                     0;
                 const amt = parseNumericAmount(rawAmount);
-                const rawDate = String(row.created_at?.split(" ")[0] || row.date || "");
+
+                const rawDateStr = String(row.created_at || (row.payload as Record<string, unknown>)?.created_at || row.date || "");
+                const recordDate = parseApiDateTime(rawDateStr);
+
+                if (!recordDate) return;
 
                 let targetBucketIndex = -1;
-                if (rawDate) {
-                    targetBucketIndex = buckets.findIndex((b) => b.dateKey === rawDate);
+
+                if (diffDays === 1) {
+                    const recordTime = recordDate.getTime();
+                    targetBucketIndex = buckets.findIndex((b) => recordTime >= b.startMs && recordTime <= b.endMs);
+                    if (targetBucketIndex === -1) {
+                        const hour = recordDate.getHours();
+                        targetBucketIndex = Math.min(Math.floor(hour / 3), buckets.length - 1);
+                    }
+                } else if (diffDays <= 31) {
+                    const y = recordDate.getFullYear();
+                    const m = String(recordDate.getMonth() + 1).padStart(2, "0");
+                    const d = String(recordDate.getDate()).padStart(2, "0");
+                    const recordDateKey = `${y}-${m}-${d}`;
+                    targetBucketIndex = buckets.findIndex((b) => b.dateKey === recordDateKey);
+                } else {
+                    const recordTime = recordDate.getTime();
+                    let minDiff = Infinity;
+                    buckets.forEach((b, i) => {
+                        const bucketMid = (b.startMs + b.endMs) / 2;
+                        const diff = Math.abs(bucketMid - recordTime);
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            targetBucketIndex = i;
+                        }
+                    });
                 }
 
-                if (targetBucketIndex === -1) {
-                    targetBucketIndex = idx % buckets.length;
+                if (targetBucketIndex !== -1 && buckets[targetBucketIndex]) {
+                    buckets[targetBucketIndex].volume += amt;
+                    buckets[targetBucketIndex].submissions += 1;
                 }
-
-                buckets[targetBucketIndex].volume += amt;
-                buckets[targetBucketIndex].submissions += 1;
             });
         }
 
@@ -165,17 +293,21 @@ export default function DashboardPage() {
         const maxVol = Math.max(...buckets.map((b) => b.volume), 10000);
         const maxSub = Math.max(...buckets.map((b) => b.submissions), 5);
 
-        // Chart coordinates (viewBox 0 0 1000 300, inner padding: top 30, bottom 260)
+        // Chart coordinates (viewBox 0 0 1000 300, inner padding: top 25, baseline 260)
         const width = 1000;
-        const height = 240;
+        const baselineY = 260;
         const paddingX = 40;
         const paddingTop = 25;
 
         const points = buckets.map((b, i) => {
-            const x = paddingX + (i / (bucketCount - 1)) * (width - paddingX * 2);
-            // Invert Y so highest value is near paddingTop
-            const volY = paddingTop + (1 - b.volume / maxVol) * (height - paddingTop);
-            const subY = paddingTop + (1 - b.submissions / maxSub) * (height - paddingTop);
+            const x = paddingX + (i / Math.max(buckets.length - 1, 1)) * (width - paddingX * 2);
+            // Invert Y so highest value is near paddingTop, 0 sits on baseline
+            const volY = b.volume > 0
+                ? paddingTop + (1 - b.volume / maxVol) * (baselineY - paddingTop)
+                : baselineY;
+            const subY = b.submissions > 0
+                ? paddingTop + (1 - b.submissions / maxSub) * (baselineY - paddingTop)
+                : baselineY;
 
             return {
                 ...b,
@@ -188,7 +320,7 @@ export default function DashboardPage() {
         // Helper to construct smooth cubic bezier SVG path
         const buildSvgPath = (coords: { x: number; y: number }[]) => {
             if (coords.length === 0) return "";
-            if (coords.length === 1) return `M${coords[0].x},${coords[0].y}`;
+            if (coords.length === 1) return `M ${coords[0].x},${coords[0].y}`;
 
             let d = `M ${coords[0].x},${coords[0].y}`;
             for (let i = 0; i < coords.length - 1; i++) {
@@ -207,11 +339,11 @@ export default function DashboardPage() {
         const submissionsLinePath = buildSvgPath(points.map((p) => ({ x: p.x, y: p.subY })));
 
         const volumeAreaPath = points.length > 0
-            ? `${volumeLinePath} L ${points[points.length - 1].x},290 L ${points[0].x},290 Z`
+            ? `${volumeLinePath} L ${points[points.length - 1].x},${baselineY} L ${points[0].x},${baselineY} Z`
             : "";
 
         const submissionsAreaPath = points.length > 0
-            ? `${submissionsLinePath} L ${points[points.length - 1].x},290 L ${points[0].x},290 Z`
+            ? `${submissionsLinePath} L ${points[points.length - 1].x},${baselineY} L ${points[0].x},${baselineY} Z`
             : "";
 
         return {
@@ -222,6 +354,7 @@ export default function DashboardPage() {
             submissionsAreaPath,
             maxVol,
             maxSub,
+            baselineY,
         };
     }, [dateRange, apiData]);
 
@@ -265,14 +398,21 @@ export default function DashboardPage() {
     ], [metrics]);
 
     const recentSubmissionsHeaders: TableHeader[] = [
-        { key: "applicant", label: "Applicant", width: "35%" },
-        { key: "email", label: "Email & Phone", width: "30%" },
-        { key: "loan_amount", label: "Loan Amount", align: "right", width: "20%" },
-        { key: "date", label: "Date", align: "right", width: "15%" },
+        { key: "applicant", label: "Applicant", width: "32%" },
+        { key: "email", label: "Email & Phone", width: "28%" },
+        { key: "loan_amount", label: "Loan Amount", align: "right", width: "18%" },
+        { key: "created_at", label: "Created At", align: "right", width: "22%" },
     ];
 
     const recentSubmissionsRows: TableCell[][] = useMemo(() => {
-        return apiData.slice(0, 6).map((row) => {
+        // Sort submissions by creation timestamp descending (newest created first)
+        const sorted = [...apiData].sort((a, b) => {
+            const dateA = parseApiDateTime(a.created_at || (a.payload as Record<string, unknown>)?.created_at || a.date)?.getTime() || 0;
+            const dateB = parseApiDateTime(b.created_at || (b.payload as Record<string, unknown>)?.created_at || b.date)?.getTime() || 0;
+            return dateB - dateA;
+        });
+
+        return sorted.slice(0, 8).map((row) => {
             const payload = row.payload || {};
             const firstName = payload.first_name || payload.firstName || row.first_name || row.firstName || "";
             const lastName = payload.last_name || payload.lastName || row.last_name || row.lastName || "";
@@ -295,7 +435,30 @@ export default function DashboardPage() {
             const email = payload.email || row.email || "—";
             const phone = payload.phone || payload.phoneMobile || payload.cell || row.phone || row.cell || "—";
             const refcode = payload.refcode || row.refcode || (row.lead_id ? `REF${row.lead_id}` : "");
-            const date = String(row.created_at?.split(" ")[0] || row.date);
+
+            const rawCreatedAt = String(row.created_at || (row.payload as Record<string, unknown>)?.created_at || row.date || "");
+            const parsedDate = parseApiDateTime(rawCreatedAt);
+
+            let formattedDate = "—";
+            let formattedTime = "";
+            let relativeDesc = "";
+
+            if (parsedDate) {
+                formattedDate = parsedDate.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                });
+                formattedTime = parsedDate.toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                });
+                const rel = relativeTime(parsedDate);
+                relativeDesc = rel ? `${formattedTime} • ${rel}` : formattedTime;
+            } else if (rawCreatedAt) {
+                formattedDate = String(rawCreatedAt);
+            }
 
             return [
                 {
@@ -330,9 +493,14 @@ export default function DashboardPage() {
                 },
                 {
                     align: "right",
+                    title: {
+                        value: formattedDate,
+                        className: "font-semibold text-foreground text-xs",
+                        tilevalue: rawCreatedAt ? `Created: ${rawCreatedAt}` : undefined,
+                    },
                     desc: {
-                        value: date,
-                        className: "text-xs font-mono text-muted-foreground",
+                        value: relativeDesc || formattedTime || undefined,
+                        className: "text-[11px] font-mono text-muted-foreground",
                     },
                 },
             ];
@@ -582,6 +750,7 @@ export default function DashboardPage() {
                             {/* Interactive Data Points & Hover Targets */}
                             {chartSeries.buckets.map((pt, idx) => {
                                 const isHovered = hoveredPointIdx === idx;
+                                const hitWidth = Math.max(1000 / Math.max(chartSeries.buckets.length, 1), 20);
                                 return (
                                     <g key={idx} className="cursor-pointer">
                                         {/* Vertical hover guide bar */}
@@ -590,7 +759,7 @@ export default function DashboardPage() {
                                                 x1={pt.x}
                                                 y1={10}
                                                 x2={pt.x}
-                                                y2={290}
+                                                y2={chartSeries.baselineY || 260}
                                                 stroke="#4f46e5"
                                                 strokeWidth="1.5"
                                                 strokeDasharray="4 4"
@@ -622,9 +791,9 @@ export default function DashboardPage() {
 
                                         {/* Transparent Hover Hitbox */}
                                         <rect
-                                            x={pt.x - 30}
+                                            x={pt.x - hitWidth / 2}
                                             y={0}
-                                            width={60}
+                                            width={hitWidth}
                                             height={300}
                                             fill="transparent"
                                             onMouseEnter={() => setHoveredPointIdx(idx)}
@@ -636,56 +805,68 @@ export default function DashboardPage() {
                         </svg>
 
                         {/* Interactive Tooltip Popover */}
-                        {hoveredPointIdx !== null && chartSeries.buckets[hoveredPointIdx] && (
-                            <div
-                                className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-full rounded-xl bg-card/95 backdrop-blur-md px-3.5 py-2.5 text-xs shadow-(--shadow-lift) border border-border transition-all duration-150"
-                                style={{
-                                    left: `${(chartSeries.buckets[hoveredPointIdx].x / 1000) * 100}%`,
-                                    top: `${Math.min(
-                                        chartSeries.buckets[hoveredPointIdx].volY,
-                                        chartSeries.buckets[hoveredPointIdx].subY
-                                    ) - 15}px`,
-                                }}
-                            >
-                                <div className="font-bold text-foreground border-b border-border pb-1 mb-1.5 flex items-center justify-between gap-3">
-                                    <span>{chartSeries.buckets[hoveredPointIdx].label}</span>
-                                    <span className="text-[10px] text-muted-foreground font-mono">
-                                        {chartSeries.buckets[hoveredPointIdx].dateKey}
-                                    </span>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center justify-between gap-3 text-indigo-600 font-semibold">
-                                        <span className="flex items-center gap-1.5">
-                                            <span className="size-2 rounded-full bg-indigo-600" />
-                                            Volume:
-                                        </span>
-                                        <span className="font-mono">
-                                            ${chartSeries.buckets[hoveredPointIdx].volume.toLocaleString()}
+                        {hoveredPointIdx !== null && chartSeries.buckets[hoveredPointIdx] && (() => {
+                            const pt = chartSeries.buckets[hoveredPointIdx];
+                            const leftPercent = Math.min(Math.max((pt.x / 1000) * 100, 10), 90);
+                            return (
+                                <div
+                                    className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-full rounded-xl bg-card/95 backdrop-blur-md px-3.5 py-2.5 text-xs shadow-(--shadow-lift) border border-border transition-all duration-150"
+                                    style={{
+                                        left: `${leftPercent}%`,
+                                        top: `${Math.min(pt.volY, pt.subY) - 15}px`,
+                                    }}
+                                >
+                                    <div className="font-bold text-foreground border-b border-border pb-1 mb-1.5 flex items-center justify-between gap-3">
+                                        <span>{pt.label}</span>
+                                        <span className="text-[10px] text-muted-foreground font-mono">
+                                            {pt.dateKey}
                                         </span>
                                     </div>
-                                    <div className="flex items-center justify-between gap-3 text-sky-600 font-semibold">
-                                        <span className="flex items-center gap-1.5">
-                                            <span className="size-2 rounded-full bg-sky-500" />
-                                            Submissions:
-                                        </span>
-                                        <span className="font-mono">
-                                            {chartSeries.buckets[hoveredPointIdx].submissions} leads
-                                        </span>
+                                    <div className="space-y-1">
+                                        <div className="flex items-center justify-between gap-3 text-indigo-600 font-semibold">
+                                            <span className="flex items-center gap-1.5">
+                                                <span className="size-2 rounded-full bg-indigo-600" />
+                                                Volume:
+                                            </span>
+                                            <span className="font-mono">
+                                                ${pt.volume.toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between gap-3 text-sky-600 font-semibold">
+                                            <span className="flex items-center gap-1.5">
+                                                <span className="size-2 rounded-full bg-sky-500" />
+                                                Submissions:
+                                            </span>
+                                            <span className="font-mono">
+                                                {pt.submissions} leads
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            );
+                        })()}
 
                         {/* X-Axis Dynamic Date Labels */}
-                        <div className="absolute -bottom-7 left-0 right-0 flex justify-between px-6 text-[11px] font-semibold uppercase tracking-wider text-muted/80">
-                            {chartSeries.buckets.map((b, i) => (
-                                <span
-                                    key={i}
-                                    className={`transition-colors ${hoveredPointIdx === i ? "text-primary font-bold" : ""}`}
-                                >
-                                    {b.label}
-                                </span>
-                            ))}
+                        <div className="pointer-events-none absolute -bottom-7 left-0 right-0 h-6 text-[11px] font-semibold uppercase tracking-wider text-muted/80">
+                            {chartSeries.buckets.map((b, i) => {
+                                const total = chartSeries.buckets.length;
+                                const step = Math.max(1, Math.round(total / 6));
+                                const isMilestone = i === 0 || i === total - 1 || i % step === 0;
+                                const isHovered = hoveredPointIdx === i;
+
+                                if (!isMilestone && !isHovered) return null;
+
+                                return (
+                                    <span
+                                        key={i}
+                                        style={{ left: `${(b.x / 1000) * 100}%` }}
+                                        className={`absolute -translate-x-1/2 whitespace-nowrap transition-all duration-150 ${isHovered ? "text-primary font-bold z-10 scale-105" : "text-muted/80"
+                                            }`}
+                                    >
+                                        {b.label}
+                                    </span>
+                                );
+                            })}
                         </div>
                     </div>
                     <div className="h-6" />
