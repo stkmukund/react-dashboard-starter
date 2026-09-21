@@ -533,7 +533,7 @@ export default function DashboardPage() {
 
                     {/* Date Range Dropdown */}
                     <DateRangeDropdown
-                        defaultPreset="this_month"
+                        defaultPreset="last_7_days"
                         onDateRangeChange={(range) => {
                             setDateRange((prev) => {
                                 if (

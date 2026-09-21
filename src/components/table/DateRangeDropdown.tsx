@@ -275,14 +275,20 @@ export const DateRangeDropdown = forwardRef<DateRangeDropdownRef, DateRangeDropd
                 <div className="py-1.5 max-h-72 overflow-y-auto">
                   {availablePresets.map((opt) => {
                     const isSelected = selectedPreset === opt.value;
+                    const isMobilePreset =
+                      opt.value === "today" ||
+                      opt.value === "yesterday" ||
+                      opt.value === "last_7_days";
+
                     return (
                       <button
                         key={opt.value}
                         type="button"
                         onClick={() => handlePresetSelect(opt.value)}
-                        className={`w-full flex items-center justify-between px-4 py-2 text-xs font-medium transition-colors ${isSelected
-                          ? "bg-primary/10 text-primary font-semibold"
-                          : "text-foreground hover:bg-surface-2"
+                        className={`w-full items-center justify-between px-4 py-2 text-xs font-medium transition-colors ${isMobilePreset ? "flex" : "hidden sm:flex"
+                          } ${isSelected
+                            ? "bg-primary/10 text-primary font-semibold"
+                            : "text-foreground hover:bg-surface-2"
                           }`}
                       >
                         <span>{opt.label}</span>
