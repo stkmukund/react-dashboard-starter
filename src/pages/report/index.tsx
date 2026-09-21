@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     Button,
     calculateDateRange,
+    EyeActionButton,
     Icon,
     Table,
     TableFilters,
@@ -12,7 +13,7 @@ import {
     type TableHeader,
 } from "../../components/ui";
 import { reportService, type ApiLoanRecord } from "../../services";
-import { parseNumericAmount } from "../../lib/utils";
+import { cn, parseNumericAmount } from "../../lib/utils";
 
 export interface LoanReportItem {
     id: string;
@@ -187,6 +188,8 @@ function formatCurrency(amount: string | number): string {
     }).format(num);
 }
 
+
+
 export default function Report() {
     // Filters State
     const [searchValue, setSearchValue] = useState("");
@@ -207,6 +210,20 @@ export default function Report() {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [selectedRecord, setSelectedRecord] = useState<LoanReportItem | null>(null);
+    const detailsRef = useRef<HTMLDivElement | null>(null);
+
+    // Smoothly scroll down to details when a record is selected
+    useEffect(() => {
+        if (selectedRecord && detailsRef.current) {
+            const timer = setTimeout(() => {
+                detailsRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [selectedRecord]);
 
     // Fetch API Data
     const fetchData = useCallback(async () => {
@@ -433,6 +450,7 @@ export default function Report() {
     // Transform into TableCells
     const tableRows: TableCell[][] = useMemo(() => {
         return paginatedData.map((item) => {
+            const isSelected = selectedRecord?.id === item.id;
             const firstInit = item.first_name?.[0] || "A";
             const lastInit = item.last_name?.[0] || "";
             const initials = `${firstInit}${lastInit}`.toUpperCase();
@@ -444,7 +462,7 @@ export default function Report() {
                     title: {
                         value: `${item.first_name} ${item.last_name}`.trim(),
                         className: "font-semibold text-foreground hover:text-primary transition-colors cursor-pointer",
-                        onClick: () => setSelectedRecord(item),
+                        onClick: () => setSelectedRecord((prev) => (prev?.id === item.id ? null : item)),
                     },
                     desc: {
                         value: item.brand
@@ -492,14 +510,12 @@ export default function Report() {
                     align: "right",
                     action: (
                         <div className="flex items-center justify-end gap-1">
-                            <button
-                                type="button"
-                                onClick={() => setSelectedRecord(item)}
-                                aria-label="View Details"
-                                className="grid size-8 place-items-center rounded-lg hover:bg-surface-2 text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                <Icon name="visibility" size={16} />
-                            </button>
+                            <EyeActionButton
+                                isSelected={isSelected}
+                                onClick={() => {
+                                    setSelectedRecord((prev) => (prev?.id === item.id ? null : item));
+                                }}
+                            />
                             <button
                                 type="button"
                                 aria-label="More options"
@@ -510,9 +526,9 @@ export default function Report() {
                         </div>
                     ),
                 },
-            ]
+            ];
         });
-    }, [paginatedData]);
+    }, [paginatedData, selectedRecord]);
 
     // Headers definition
     const tableHeaders: TableHeader[] = [
@@ -652,7 +668,10 @@ export default function Report() {
 
             {/* Selected Applicant Details Drawer / Card */}
             {selectedRecord && (
-                <div className="card p-6 rounded-3xl bg-surface-2/40 border border-border shadow-(--shadow-card)">
+                <div
+                    ref={detailsRef}
+                    className="card p-6 rounded-3xl bg-surface-2/40 border border-border shadow-(--shadow-card) scroll-mt-6"
+                >
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-border">
                         <div className="flex items-center gap-3.5">
                             <div className="size-12 rounded-2xl bg-primary/10 text-primary font-bold flex items-center justify-center text-lg">

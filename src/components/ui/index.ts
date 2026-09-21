@@ -17,8 +17,11 @@ export { Skeleton, BoardCardSkeleton, ColumnSkeleton } from "./Skeleton";
 export { default as Spinner, FullScreenSpinner } from "./Spinner";
 export { default as BrandDropdown } from "./BrandDropdown";
 export type { BrandDropdownProps } from "./BrandDropdown";
+export { default as EyeActionButton } from "./EyeActionButton";
+export type { EyeActionButtonProps } from "../../lib/interfaces";
 export { BRAND_OPTIONS, BRAND_NAME_MAP, type BrandOption } from "../../lib/utils";
 
 // Table and Filter Suite
 export * from "../table";
+
 
