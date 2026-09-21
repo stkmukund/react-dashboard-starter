@@ -17,7 +17,7 @@ const variants = {
 } as const;
 
 const sizes = {
-  sm: "h-8 px-3.5 text-xs gap-1.5",
+  sm: "h-8 text-xs gap-1.5",
   md: "h-10 px-5 text-sm gap-2",
   lg: "h-12 px-7 text-[15px] gap-2",
   icon: "h-10 w-10",
@@ -47,7 +47,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => (
   <button
     className={cn(
-      "inline-flex select-none items-center justify-center whitespace-nowrap rounded-full font-semibold transition-all duration-200 ease-spring focus-ring disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97]",
+      "inline-flex select-none items-center justify-center whitespace-nowrap rounded-full font-semibold transition-all duration-200 ease-spring focus-ring disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97] px-2.5 sm:px-3.5",
       variants[variant],
       sizes[size],
       className
