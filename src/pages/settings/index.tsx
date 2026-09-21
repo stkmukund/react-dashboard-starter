@@ -127,7 +127,7 @@ export default function SettingsPage() {
 
                 {/* Preferences */}
                 <SettingsCard title="Preferences" description="Saved to this browser.">
-                    <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center justify-between gap-4 mt-4">
                         <div>
                             <p className="text-sm font-medium text-foreground">Reduce motion</p>
                             <p className="mt-0.5 text-xs text-muted-foreground">
@@ -155,7 +155,7 @@ export default function SettingsPage() {
 
                 {/* About */}
                 <SettingsCard title="About">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 mt-4">
                         <div className="brand-gradient flex h-10 w-10 items-center justify-center rounded-2xl shadow-(--shadow-brand)">
                             <Icon
                                 name={appConfig.logoIcon}
@@ -179,6 +179,7 @@ export default function SettingsPage() {
                         variant="danger"
                         loading={loggingOut}
                         onClick={handleLogout}
+                        className="mt-4"
                     >
                         <Icon name="logout" size={16} /> Sign out
                     </Button>
