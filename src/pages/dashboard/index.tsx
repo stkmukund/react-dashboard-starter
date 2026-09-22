@@ -12,7 +12,8 @@ import {
     BRAND_OPTIONS,
 } from "../../components/ui";
 import { reportService, type ApiLoanRecord } from "../../services";
-import { parseNumericAmount, relativeTime } from "../../lib/utils";
+import { parseNumericAmount, relativeTime, downloadCsv, formatLoanRecordForExport } from "../../lib";
+import toast from "react-hot-toast";
 
 /**
  * Robust parser for backend timestamps (e.g. "2026-09-17 02:56:02", "2026-09-17T02:56:02", "2026-09-17")
@@ -65,7 +66,7 @@ interface KpiData {
 
 export default function DashboardPage() {
     const [selectedBrand, setSelectedBrand] = useState("riverlend");
-    const [dateRange, setDateRange] = useState<DateRange>(() => calculateDateRange("this_month"));
+    const [dateRange, setDateRange] = useState<DateRange>(() => calculateDateRange("last_7_days"));
     const [hoveredKpi, setHoveredKpi] = useState<number | null>(null);
     const [hoveredPointIdx, setHoveredPointIdx] = useState<number | null>(null);
     const [apiData, setApiData] = useState<ApiLoanRecord[]>([]);
@@ -103,6 +104,24 @@ export default function DashboardPage() {
     useEffect(() => {
         fetchDashboardData();
     }, [fetchDashboardData]);
+
+    // Handle CSV export of current API records
+    const handleExportCSV = useCallback(() => {
+        if (!apiData || apiData.length === 0) {
+            toast.error("No data available to export");
+            return;
+        }
+
+        const formatted = apiData.map((item, index) =>
+            formatLoanRecordForExport(item, index, selectedBrand)
+        );
+        const timestamp = new Date().toISOString().slice(0, 10);
+        const filename = `dashboard_export_${timestamp}.csv`;
+        const success = downloadCsv(formatted, filename);
+        if (success) {
+            toast.success(`Exported ${formatted.length} records to CSV`);
+        }
+    }, [apiData, selectedBrand]);
 
     // Computed KPI metrics from API response
     const metrics = useMemo(() => {
@@ -560,7 +579,12 @@ export default function DashboardPage() {
                         Refresh
                     </Button>
 
-                    <Button size="sm" className="shadow-[var(--shadow-brand)]">
+                    <Button
+                        size="sm"
+                        className="shadow-[var(--shadow-brand)]"
+                        onClick={handleExportCSV}
+                        disabled={isLoading || apiData.length === 0}
+                    >
                         <Icon name="download" size={16} />
                         Export
                     </Button>

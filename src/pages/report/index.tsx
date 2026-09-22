@@ -13,7 +13,8 @@ import {
     type TableHeader,
 } from "../../components/ui";
 import { reportService, type ApiLoanRecord } from "../../services";
-import { parseNumericAmount } from "../../lib/utils";
+import { parseNumericAmount, downloadCsv, formatLoanRecordForExport } from "../../lib";
+import toast from "react-hot-toast";
 
 export interface LoanReportItem {
     id: string;
@@ -30,6 +31,7 @@ export interface LoanReportItem {
     loan_amount: string | number;
     status?: "APPROVED" | "PENDING" | "PROCESSING" | "COMPLETED" | "WARNING" | "FAILED" | string;
     date?: string;
+    [key: string]: unknown;
 }
 
 // Normalize backend API loan record into LoanReportItem
@@ -166,6 +168,7 @@ function normalizeApiRecord(raw: ApiLoanRecord, index: number, currentBrand: str
         brand,
         loan_amount: loanAmount,
         date,
+        status: String(payload.status || r.status || "APPROVED").toUpperCase(),
     };
 }
 
@@ -373,65 +376,23 @@ export default function Report() {
         return result;
     }, [dataList, searchValue, selectedBrand, selectedState, selectedStatus, sortKey, sortDirection]);
 
-    // CSV Export Handler
+    // CSV Export Handler (Exports all records from current API response)
     const handleExportCSV = useCallback(() => {
-        const dataToExport = filteredAndSortedData;
-        if (dataToExport.length === 0) return;
+        if (!dataList || dataList.length === 0) {
+            toast.error("No data available to export");
+            return;
+        }
 
-        const headers = [
-            "ID",
-            "First Name",
-            "Last Name",
-            "Email",
-            "Phone",
-            "Address",
-            "City",
-            "State",
-            "Zipcode",
-            "Refcode",
-            "Brand",
-            "Loan Amount",
-            "Date",
-        ];
-
-        const csvRows: string[] = [
-            headers.map((h) => `"${h.replace(/"/g, '""')}"`).join(","),
-        ];
-
-        dataToExport.forEach((item) => {
-            const brandLabel = (item.brand && BRAND_NAME_MAP[item.brand]) || item.brand || "";
-            const row = [
-                item.id ?? "",
-                item.first_name ?? "",
-                item.last_name ?? "",
-                item.email ?? "",
-                item.phone ?? "",
-                item.address ?? "",
-                item.city ?? "",
-                item.state ?? "",
-                item.zipcode ?? "",
-                item.refcode ?? "",
-                brandLabel,
-                item.loan_amount ?? "",
-                item.date ?? "",
-            ];
-
-            csvRows.push(
-                row
-                    .map((val) => `"${String(val).replace(/"/g, '""')}"`)
-                    .join(",")
-            );
-        });
-
-        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + encodeURIComponent(csvRows.join("\r\n"));
-        const link = document.createElement("a");
-        link.setAttribute("href", csvContent);
+        const formatted = dataList.map((item, index) =>
+            formatLoanRecordForExport(item, index, String(selectedBrand || ""))
+        );
         const timestamp = new Date().toISOString().slice(0, 10);
-        link.setAttribute("download", `loan_report_${timestamp}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }, [filteredAndSortedData]);
+        const filename = `report_export_${timestamp}.csv`;
+        const success = downloadCsv(formatted, filename);
+        if (success) {
+            toast.success(`Exported ${formatted.length} records to CSV`);
+        }
+    }, [dataList, selectedBrand]);
 
     // Paginated Rows
     const paginatedData = useMemo(() => {
@@ -572,9 +533,14 @@ export default function Report() {
                             <Icon name="refresh" size={16} className={isLoading ? "animate-spin" : ""} />
                             Refresh
                         </Button>
-                        <Button size="sm" onClick={handleExportCSV} disabled={filteredAndSortedData.length === 0}>
-                            <Icon name="file_download" size={16} />
-                            Export Report
+                        <Button
+                            size="sm"
+                            className="shadow-[var(--shadow-brand)]"
+                            onClick={handleExportCSV}
+                            disabled={isLoading || dataList.length === 0}
+                        >
+                            <Icon name="download" size={16} />
+                            Export
                         </Button>
                     </div>
                 </div>
