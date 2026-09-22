@@ -516,13 +516,13 @@ export default function Report() {
                                     setSelectedRecord((prev) => (prev?.id === item.id ? null : item));
                                 }}
                             />
-                            <button
+                            {/* <button
                                 type="button"
                                 aria-label="More options"
                                 className="grid size-8 place-items-center rounded-lg hover:bg-surface-2 text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 <Icon name="more_vert" size={16} />
-                            </button>
+                            </button> */}
                         </div>
                     ),
                 },
