@@ -13,7 +13,12 @@ interface SwitchProps {
     "aria-label"?: string;
 }
 
-const Switch = ({ checked, onChange, id, "aria-label": ariaLabel }: SwitchProps) => (
+const Switch = ({
+    checked,
+    onChange,
+    id,
+    "aria-label": ariaLabel,
+}: SwitchProps) => (
     <button
         id={id}
         type="button"
@@ -22,16 +27,45 @@ const Switch = ({ checked, onChange, id, "aria-label": ariaLabel }: SwitchProps)
         aria-label={ariaLabel}
         onClick={() => onChange(!checked)}
         className={cn(
-            "relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus-ring",
-            checked ? "bg-primary" : "bg-elevated"
+            "group relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center",
+            "rounded-full border border-transparent outline-none select-none",
+            "transition-colors duration-250 ease-in-out",
+            "focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2",
+            checked
+                ? "bg-primary shadow-inner"
+                : "bg-surface-2 hover:bg-elevated"
         )}
     >
+        {/* Track highlight */}
         <span
+            aria-hidden="true"
             className={cn(
-                "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-(--shadow-card) transition-transform duration-200",
-                checked ? "translate-x-5.5" : "translate-x-0.5"
+                "absolute inset-0 rounded-full",
+                "bg-gradient-to-r from-white/15 to-transparent",
+                "transition-opacity duration-200",
+                checked ? "opacity-100" : "opacity-0"
             )}
         />
+
+        {/* Thumb */}
+        <span
+            aria-hidden="true"
+            className={cn(
+                "relative z-10 flex h-5.5 w-5.5 items-center justify-center",
+                "rounded-full bg-white shadow-sm ring-1 ring-black/10",
+                "transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+                "group-hover:shadow-md",
+                checked ? "translate-x-[1.375rem]" : "translate-x-0.5"
+            )}
+        >
+            <span
+                className={cn(
+                    "h-1.5 w-1.5 rounded-full",
+                    "transition-colors duration-200",
+                    checked ? "bg-primary" : "bg-muted-foreground/40"
+                )}
+            />
+        </span>
     </button>
 );
 
